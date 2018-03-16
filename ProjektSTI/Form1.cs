@@ -22,7 +22,8 @@ namespace ProjektSTI
         {
             var soubory = VratSouboryCommituDoCasu(DateTime.Now.AddDays(-1));
             System.Diagnostics.Debug.WriteLine(soubory.Count);
-            VratSouboryUrcitehoTypuRepozitare("java");
+            var javaSoubory = RootObject.VratSouboryUrcitehoTypuRepozitare("java");
+
         }
 
         

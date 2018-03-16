@@ -17,10 +17,17 @@ namespace ProjektSTI
             AdresaServer = "http://api.github.com";
             Repozitar = "TEST";
             Uzivatel = "Antoninecek";
+            if (System.IO.File.Exists("config.json"))
+            {
+                var txt = System.IO.File.ReadAllText("config.json");
+                Nastaveni n = JsonConvert.DeserializeObject<Nastaveni>(txt);
+                Token = n.githubToken;
+            }
         }
         public string AdresaServer { get; set; }
         public string Repozitar { get; set; }
         public string Uzivatel { get; set; }
+        public string Token { get; set; }
 
         public string UdelejRequest(string url)
         {
@@ -28,7 +35,7 @@ namespace ProjektSTI
             request.ContentType = "application/vnd.github.v3+json";
             request.Method = "GET";
             request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0";
-            request.Headers.Add("Authorization", "token 79bd7fdff42927c77fffd000f63f108e0b05cf14");
+            request.Headers.Add("Authorization", "token " + Token);
             WebResponse response = request.GetResponse();
             Stream dataStream = response.GetResponseStream();
             StreamReader reader = new StreamReader(dataStream);
