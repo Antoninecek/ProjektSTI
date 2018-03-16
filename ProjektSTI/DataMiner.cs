@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -17,12 +18,12 @@ namespace ProjektSTI
             AdresaServer = "http://api.github.com";
             Repozitar = "TEST";
             Uzivatel = "Antoninecek";
-            if (System.IO.File.Exists("config.json"))
-            {
-                var txt = System.IO.File.ReadAllText("config.json");
-                Nastaveni n = JsonConvert.DeserializeObject<Nastaveni>(txt);
-                Token = n.githubToken;
-            }
+
+            string executableLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var txt = System.IO.File.ReadAllText("F:\\STI\\ProjektSTI\\ProjektSTI\\config.json");
+            Nastaveni n = JsonConvert.DeserializeObject<Nastaveni>(txt);
+            Token = n.githubToken;
+
         }
         public string AdresaServer { get; set; }
         public string Repozitar { get; set; }
@@ -106,9 +107,9 @@ namespace ProjektSTI
 
         public static void VratSouboryZaznamu(List<Zaznam> zaznamy)
         {
-            foreach(var z in zaznamy)
+            foreach (var z in zaznamy)
             {
-                
+
             }
         }
     }
