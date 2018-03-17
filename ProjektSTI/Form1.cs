@@ -19,32 +19,29 @@ namespace ProjektSTI
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
-            var soubory = VratSouboryCommituDoCasu(DateTime.Now.AddHours(-1));
-            System.Diagnostics.Debug.WriteLine(soubory.Count);
-            var javaSoubory = RootObject.VratSouboryUrcitehoTypuRepozitare("java");
+            var souboryTask = File.VratSouboryCommituDoCasuAsync(DateTime.Now.AddYears(-5));
+            //souboryTask.Start();
+            var javaSouboryTask = RootObject.VratSouboryUrcitehoTypuRepozitareAsync("java");
+            //javaSouboryTask.Start();
+
+            
+            //var javaSoubory = RootObject.VratSouboryUrcitehoTypuRepozitare("java");
+
+            System.Diagnostics.Debug.WriteLine("cekame");
+
+            var javaSoubory = await Task.Run(() => javaSouboryTask); ;
+
+            System.Diagnostics.Debug.WriteLine(javaSoubory.Count);
             var pocetRadku = RootObject.SpocitejPocetRadkuSadySouboru(javaSoubory);
+            System.Diagnostics.Debug.WriteLine(pocetRadku);
+
+            var soubory = await Task.Run(() => souboryTask);
+            System.Diagnostics.Debug.WriteLine(soubory.Count);
         }
 
-        /// <summary>
-        /// main metoda pro ziskani souboru z commitu uskutecnenych po zadane dobe
-        /// </summary>
-        /// <param name="cas"></param>
-        /// <returns></returns>
-        public List<File> VratSouboryCommituDoCasu(DateTime cas)
-        {
-            DataMiner dm = new DataMiner();
-            List<Zaznam> zaznamy = dm.VratCommity();
-            List<Zaznam> zaznamyHodina = Zaznam.SelektujCasovouPeriodu(zaznamy, cas);
-            List<File> soubory = new List<File>();
-            foreach (var z in zaznamyHodina)
-            {
-                var detail = dm.VratDetailCommitu(z.sha);
-                soubory.AddRange(detail.files);
-            }
-            return soubory;
-        }
+        
 
 
 

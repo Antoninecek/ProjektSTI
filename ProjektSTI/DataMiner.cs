@@ -16,7 +16,7 @@ namespace ProjektSTI
         public DataMiner()
         {
             AdresaServer = "http://api.github.com";
-            Repozitar = "TEST";
+            Repozitar = "sklad";
             Uzivatel = "Antoninecek";
         }
         public string AdresaServer { get; set; }
@@ -39,15 +39,17 @@ namespace ProjektSTI
             return responseFromServer;
         }
 
-        public string UdelejRequestGitHub(string url)
+        public string UdelejRequestGitHub(string url, Dictionary<string, string> parametry = null)
         {
             var txt = System.IO.File.ReadAllText("F:\\STI\\ProjektSTI\\ProjektSTI\\config.json");
             Nastaveni n = JsonConvert.DeserializeObject<Nastaveni>(txt);
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            // github api si nekdy doplni nejakej parametr sam, potrebuju zjistit, jestli uz nejakej parametr existuje, abych mohl navazat
+            string znak = url.Contains("?") ? "&" : "?";
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url + znak + "access_token=" + n.githubToken + "&" + PrevedSlovnikParametruNaString(parametry));
             request.ContentType = "application/vnd.github.v3+json";
             request.Method = "GET";
             request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0";
-            request.Headers.Add("Authorization", "token " + n.githubToken);
+            //request.Headers["Time-Zone"] = "Europe/Prague";
             WebResponse response = request.GetResponse();
             Stream dataStream = response.GetResponseStream();
             StreamReader reader = new StreamReader(dataStream);
@@ -57,6 +59,20 @@ namespace ProjektSTI
             return responseFromServer;
         }
 
+        private string PrevedSlovnikParametruNaString(Dictionary<string, string> parametry)
+        {
+            if (parametry == null)
+            {
+                return "";
+            }
+            string text = "";
+            foreach (var param in parametry)
+            {
+                text += param.Key + "=" + param.Value + "&";
+            }
+            return text;
+        }
+
         public Decimal SpocitejVyskytRetezceSouboruUrl(string url, string retezec)
         {
             DataMiner dm = new DataMiner();
@@ -64,16 +80,54 @@ namespace ProjektSTI
             return Regex.Matches(odpoved, retezec).Count;
         }
 
+        /// <summary>
+        /// ziska z API soubory, ktere jsou pod slozkou
+        /// </summary>
+        /// <param name="ro"></param>
+        /// <returns></returns>
         public List<RootObject> VratSouborySlozky(RootObject ro)
         {
-            string odpoved = UdelejRequestGitHub(ro.url);
-            return JsonConvert.DeserializeObject<RootObject[]>(odpoved).ToList();
+            List<RootObject> vsechnySoubory = new List<RootObject>();
+            int stranka = -1;
+            List<RootObject> tmpSoubory = new List<RootObject>();
+            Dictionary<string, string> nastaveni = new Dictionary<string, string>() { { "per_page", "50" }, { "page", stranka.ToString() } };
+            do
+            {
+                int tmpStranka = int.Parse(nastaveni["page"]) + 1;
+                nastaveni["page"] = tmpStranka.ToString();
+                string odpoved = UdelejRequestGitHub(ro.url, nastaveni);
+                vsechnySoubory.AddRange(JsonConvert.DeserializeObject<RootObject[]>(odpoved).ToList());
+            } while (vsechnySoubory.Count / (int.Parse(nastaveni["page"]) + 1) == 50);
+            return vsechnySoubory;
+        }
+
+        public List<string> CyklujRequesty(string url)
+        {
+            List<string> vsechnyOdpovedi = new List<string>();
+            Dictionary<string, string> nastaveni = new Dictionary<string, string>() { { "per_page", "50" }, { "page", "0" } };
+            string odpoved = "";
+            while (odpoved != "[\n\n]\n")
+            {
+                int tmpStranka = int.Parse(nastaveni["page"]) + 1;
+                nastaveni["page"] = tmpStranka.ToString();
+                odpoved = UdelejRequestGitHub(url, nastaveni);
+                if (odpoved != "[\n\n]\n")
+                {
+                    vsechnyOdpovedi.Add(odpoved);
+                }
+            };
+            return vsechnyOdpovedi;
         }
 
         public List<Zaznam> VratCommity()
         {
-            string odpoved = UdelejRequestGitHub(AdresaServer + "/repos/" + Uzivatel + "/" + Repozitar + "/commits");
-            return JsonConvert.DeserializeObject<Zaznam[]>(odpoved).ToList();
+            List<Zaznam> zaznamy = new List<Zaznam>();
+            List<string> odpovedi = CyklujRequesty(AdresaServer + "/repos/" + Uzivatel + "/" + Repozitar + "/commits");
+            foreach (var odpoved in odpovedi)
+            {
+                zaznamy.AddRange(JsonConvert.DeserializeObject<Zaznam[]>(odpoved).ToList());
+            }
+            return zaznamy;
         }
 
         public DetailZaznamu VratDetailCommitu(string sha)
@@ -238,12 +292,23 @@ namespace ProjektSTI
         public string type { get; set; }
         public Links _links { get; set; }
 
+        /// <summary>
+        /// projede sadu souboru a vrati sumu radku
+        /// </summary>
+        /// <param name="soubory"></param>
+        /// <returns></returns>
         public static Decimal SpocitejPocetRadkuSadySouboru(List<RootObject> soubory)
         {
             // znak /n == newline == uvozuje dalsi radek == pocet radku bude vzdycky n+1
             return SpocitejPocetZnakuSadySouboru(soubory, "\n") + 1;
         }
 
+        /// <summary>
+        /// projede sadu souboru a zjisti sumu vyskytu retezce ve vsech
+        /// </summary>
+        /// <param name="soubory"></param>
+        /// <param name="znak"></param>
+        /// <returns></returns>
         public static Decimal SpocitejPocetZnakuSadySouboru(List<RootObject> soubory, string znak)
         {
             DataMiner dm = new DataMiner();
@@ -255,12 +320,23 @@ namespace ProjektSTI
             return pocet;
         }
 
+        /// <summary>
+        /// vyfiltruje ze zadanych souboru jen ty se spravnou koncovkou
+        /// </summary>
+        /// <param name="soubory"></param>
+        /// <param name="koncovka"></param>
+        /// <returns></returns>
         public static List<RootObject> SelektujSouboryPodleKoncovky(List<RootObject> soubory, string koncovka)
         {
             var regex = new Regex(@".*." + koncovka + "$");
             return soubory.Where(x => regex.IsMatch(x.path.ToLower())).ToList();
         }
 
+        /// <summary>
+        /// main metoda - vrati vsechny soubory a vyfiltruje podle koncovky typ souboru
+        /// </summary>
+        /// <param name="typ">koncovka souboru</param>
+        /// <returns></returns>
         public static List<RootObject> VratSouboryUrcitehoTypuRepozitare(string typ)
         {
             var vsechnySoubory = VratVsechnySouboryRepozitareRekurzivne();
@@ -268,6 +344,17 @@ namespace ProjektSTI
             return vybraneSoubory;
         }
 
+        public static async Task<List<RootObject>> VratSouboryUrcitehoTypuRepozitareAsync(string typ)
+        {
+            var vsechnySoubory = VratVsechnySouboryRepozitareRekurzivne();
+            var vybraneSoubory = SelektujSouboryPodleKoncovky(vsechnySoubory, typ);
+            return vybraneSoubory;
+        }
+
+        /// <summary>
+        /// main metoda - vrati vsechny soubory repozitare definovaneho v DataMineru
+        /// </summary>
+        /// <returns></returns>
         private static List<RootObject> VratVsechnySouboryRepozitareRekurzivne()
         {
             DataMiner dm = new DataMiner();
@@ -287,6 +374,11 @@ namespace ProjektSTI
             return vsechnySoubory;
         }
 
+        /// <summary>
+        /// Projde zadanou slozku a podslozky a vrati vsechny soubory
+        /// </summary>
+        /// <param name="ro">slozka</param>
+        /// <returns></returns>
         private static List<RootObject> VratRekurzivneVsechnySoubory(RootObject ro)
         {
             DataMiner dm = new DataMiner();
@@ -334,6 +426,32 @@ namespace ProjektSTI
         public string raw_url { get; set; }
         public string contents_url { get; set; }
         public string patch { get; set; }
+
+
+        public static async Task<List<File>> VratSouboryCommituDoCasuAsync(DateTime cas)
+        {
+            return VratSouboryCommituDoCasu(cas);
+        }
+
+        /// <summary>
+        /// main metoda pro ziskani souboru z commitu uskutecnenych po zadane dobe
+        /// </summary>
+        /// <param name="cas">Local time - funkce sama prevede do UTC pro github</param>
+        /// <returns></returns>
+        public static List<File> VratSouboryCommituDoCasu(DateTime cas)
+        {
+            cas = cas.ToUniversalTime();
+            DataMiner dm = new DataMiner();
+            List<Zaznam> zaznamy = dm.VratCommity();
+            List<Zaznam> zaznamyHodina = Zaznam.SelektujCasovouPeriodu(zaznamy, cas);
+            List<File> soubory = new List<File>();
+            foreach (var z in zaznamyHodina)
+            {
+                var detail = dm.VratDetailCommitu(z.sha);
+                soubory.AddRange(detail.files);
+            }
+            return soubory;
+        }
     }
 
 }
