@@ -18,25 +18,18 @@ namespace ProjektSTI
             AdresaServer = "http://api.github.com";
             Repozitar = "TEST";
             Uzivatel = "Antoninecek";
-
-            string executableLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var txt = System.IO.File.ReadAllText("F:\\STI\\ProjektSTI\\ProjektSTI\\config.json");
-            Nastaveni n = JsonConvert.DeserializeObject<Nastaveni>(txt);
-            Token = n.githubToken;
-
         }
         public string AdresaServer { get; set; }
         public string Repozitar { get; set; }
         public string Uzivatel { get; set; }
-        public string Token { get; set; }
 
         public string UdelejRequest(string url)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            request.ContentType = "application/vnd.github.v3+json";
+            //request.ContentType = "application/vnd.github.v3+json";
             request.Method = "GET";
             request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0";
-            request.Headers.Add("Authorization", "token " + Token);
+            //request.Headers.Add("Authorization", "token " + Token);
             WebResponse response = request.GetResponse();
             Stream dataStream = response.GetResponseStream();
             StreamReader reader = new StreamReader(dataStream);
@@ -46,27 +39,52 @@ namespace ProjektSTI
             return responseFromServer;
         }
 
+        public string UdelejRequestGitHub(string url)
+        {
+            var txt = System.IO.File.ReadAllText("F:\\STI\\ProjektSTI\\ProjektSTI\\config.json");
+            Nastaveni n = JsonConvert.DeserializeObject<Nastaveni>(txt);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            request.ContentType = "application/vnd.github.v3+json";
+            request.Method = "GET";
+            request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0";
+            request.Headers.Add("Authorization", "token " + n.githubToken);
+            WebResponse response = request.GetResponse();
+            Stream dataStream = response.GetResponseStream();
+            StreamReader reader = new StreamReader(dataStream);
+            string responseFromServer = reader.ReadToEnd();
+            reader.Close();
+            response.Close();
+            return responseFromServer;
+        }
+
+        public Decimal SpocitejVyskytRetezceSouboruUrl(string url, string retezec)
+        {
+            DataMiner dm = new DataMiner();
+            var odpoved = dm.UdelejRequest(url);
+            return Regex.Matches(odpoved, retezec).Count;
+        }
+
         public List<RootObject> VratSouborySlozky(RootObject ro)
         {
-            string odpoved = UdelejRequest(ro.url);
+            string odpoved = UdelejRequestGitHub(ro.url);
             return JsonConvert.DeserializeObject<RootObject[]>(odpoved).ToList();
         }
 
         public List<Zaznam> VratCommity()
         {
-            string odpoved = UdelejRequest(AdresaServer + "/repos/" + Uzivatel + "/" + Repozitar + "/commits");
+            string odpoved = UdelejRequestGitHub(AdresaServer + "/repos/" + Uzivatel + "/" + Repozitar + "/commits");
             return JsonConvert.DeserializeObject<Zaznam[]>(odpoved).ToList();
         }
 
         public DetailZaznamu VratDetailCommitu(string sha)
         {
-            var odpoved = UdelejRequest(AdresaServer + "/repos/" + Uzivatel + "/" + Repozitar + "/commits/" + sha);
+            var odpoved = UdelejRequestGitHub(AdresaServer + "/repos/" + Uzivatel + "/" + Repozitar + "/commits/" + sha);
             return JsonConvert.DeserializeObject<DetailZaznamu>(odpoved);
         }
 
         public List<RootObject> VratSoubory()
         {
-            string odpoved = UdelejRequest(AdresaServer + "/repos/" + Uzivatel + "/" + Repozitar + "/contents");
+            string odpoved = UdelejRequestGitHub(AdresaServer + "/repos/" + Uzivatel + "/" + Repozitar + "/contents");
             return JsonConvert.DeserializeObject<RootObject[]>(odpoved).ToList();
         }
 
@@ -219,6 +237,23 @@ namespace ProjektSTI
         public string download_url { get; set; }
         public string type { get; set; }
         public Links _links { get; set; }
+
+        public static Decimal SpocitejPocetRadkuSadySouboru(List<RootObject> soubory)
+        {
+            // znak /n == newline == uvozuje dalsi radek == pocet radku bude vzdycky n+1
+            return SpocitejPocetZnakuSadySouboru(soubory, "\n") + 1;
+        }
+
+        public static Decimal SpocitejPocetZnakuSadySouboru(List<RootObject> soubory, string znak)
+        {
+            DataMiner dm = new DataMiner();
+            Decimal pocet = 0;
+            foreach (var js in soubory)
+            {
+                pocet += dm.SpocitejVyskytRetezceSouboruUrl(js.download_url, znak);
+            }
+            return pocet;
+        }
 
         public static List<RootObject> SelektujSouboryPodleKoncovky(List<RootObject> soubory, string koncovka)
         {

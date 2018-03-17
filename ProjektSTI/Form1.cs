@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -20,15 +21,11 @@ namespace ProjektSTI
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var soubory = VratSouboryCommituDoCasu(DateTime.Now.AddDays(-1));
+            var soubory = VratSouboryCommituDoCasu(DateTime.Now.AddHours(-1));
             System.Diagnostics.Debug.WriteLine(soubory.Count);
             var javaSoubory = RootObject.VratSouboryUrcitehoTypuRepozitare("java");
-
+            var pocetRadku = RootObject.SpocitejPocetRadkuSadySouboru(javaSoubory);
         }
-
-        
-
-        
 
         /// <summary>
         /// main metoda pro ziskani souboru z commitu uskutecnenych po zadane dobe
