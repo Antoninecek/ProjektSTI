@@ -339,6 +339,7 @@ namespace ProjektSTI
         /// <returns></returns>
         public static List<RootObject> VratSouboryUrcitehoTypuRepozitare(string typ)
         {
+            System.Diagnostics.Debug.WriteLine("soubory");
             var vsechnySoubory = VratVsechnySouboryRepozitareRekurzivne();
             var vybraneSoubory = SelektujSouboryPodleKoncovky(vsechnySoubory, typ);
             return vybraneSoubory;
@@ -346,9 +347,7 @@ namespace ProjektSTI
 
         public static async Task<List<RootObject>> VratSouboryUrcitehoTypuRepozitareAsync(string typ)
         {
-            var vsechnySoubory = VratVsechnySouboryRepozitareRekurzivne();
-            var vybraneSoubory = SelektujSouboryPodleKoncovky(vsechnySoubory, typ);
-            return vybraneSoubory;
+            return await Task.Run(() => VratSouboryUrcitehoTypuRepozitare(typ));
         }
 
         /// <summary>
@@ -427,12 +426,6 @@ namespace ProjektSTI
         public string contents_url { get; set; }
         public string patch { get; set; }
 
-
-        public static async Task<List<File>> VratSouboryCommituDoCasuAsync(DateTime cas)
-        {
-            return VratSouboryCommituDoCasu(cas);
-        }
-
         /// <summary>
         /// main metoda pro ziskani souboru z commitu uskutecnenych po zadane dobe
         /// </summary>
@@ -440,6 +433,7 @@ namespace ProjektSTI
         /// <returns></returns>
         public static List<File> VratSouboryCommituDoCasu(DateTime cas)
         {
+            System.Diagnostics.Debug.WriteLine("commity");
             cas = cas.ToUniversalTime();
             DataMiner dm = new DataMiner();
             List<Zaznam> zaznamy = dm.VratCommity();
@@ -452,6 +446,12 @@ namespace ProjektSTI
             }
             return soubory;
         }
+
+        public static async Task<List<File>> VratSouboryCommituDoCasuAsync(DateTime cas)
+        {
+            return await Task.Run(() => (VratSouboryCommituDoCasu(cas)));
+        }
+
     }
 
 }

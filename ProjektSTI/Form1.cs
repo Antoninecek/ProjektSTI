@@ -22,27 +22,35 @@ namespace ProjektSTI
         private async void button1_Click(object sender, EventArgs e)
         {
             var souboryTask = File.VratSouboryCommituDoCasuAsync(DateTime.Now.AddYears(-5));
-            //souboryTask.Start();
-            var javaSouboryTask = RootObject.VratSouboryUrcitehoTypuRepozitareAsync("java");
-            //javaSouboryTask.Start();
 
-            
-            //var javaSoubory = RootObject.VratSouboryUrcitehoTypuRepozitare("java");
+            var javaSouboryTask = RootObject.VratSouboryUrcitehoTypuRepozitareAsync("java");
 
             System.Diagnostics.Debug.WriteLine("cekame");
 
-            var javaSoubory = await Task.Run(() => javaSouboryTask); ;
+            var javaSoubory = await javaSouboryTask;
+            System.Diagnostics.Debug.WriteLine("java rdy");
 
-            System.Diagnostics.Debug.WriteLine(javaSoubory.Count);
+            var soubory = await souboryTask;
+            System.Diagnostics.Debug.WriteLine("soubory rdy");
+
+
+            //var soubory = File.VratSouboryCommituDoCasu(DateTime.Now.AddYears(-5));
+            //var javaSoubory = RootObject.VratSouboryUrcitehoTypuRepozitare("java");
+
+
             var pocetRadku = RootObject.SpocitejPocetRadkuSadySouboru(javaSoubory);
-            System.Diagnostics.Debug.WriteLine(pocetRadku);
 
-            var soubory = await Task.Run(() => souboryTask);
             System.Diagnostics.Debug.WriteLine(soubory.Count);
+            System.Diagnostics.Debug.WriteLine(javaSoubory.Count);
+            System.Diagnostics.Debug.WriteLine(pocetRadku);
+            
         }
 
         
-
+        public void vypis(object a)
+        {
+            System.Diagnostics.Debug.WriteLine(a);
+        }
 
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
