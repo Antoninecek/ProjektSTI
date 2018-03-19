@@ -59,6 +59,29 @@ namespace ProjektSTI
             return responseFromServer;
         }
 
+        public List<DetailZaznamu> VratCommityJednohoSouboru(string cesta)
+        {
+            var odpovedi = CyklujRequesty(AdresaServer + "/repos/" + Uzivatel + "/" + Repozitar + "/commits", new Dictionary<string, string>() { { "path", cesta } });
+            List<DetailZaznamu> commity = new List<DetailZaznamu>();
+            foreach (var odpoved in odpovedi)
+            {
+                commity.AddRange(JsonConvert.DeserializeObject<List<DetailZaznamu>>(odpoved));
+            }
+            return commity;
+        }
+
+        public async Task<Decimal> VratPrehledRadkuJazykuRepozitareAsync(string typ)
+        {
+            return await Task.Run(() => VratPrehledRadkuJazykuRepozitare(typ));
+        }
+
+        public Decimal VratPrehledRadkuJazykuRepozitare(string typ)
+        {
+            var odpoved = UdelejRequestGitHub(AdresaServer + "/repos/" + Uzivatel + "/" + Repozitar + "/" + "languages");
+            var pocet = JsonConvert.DeserializeObject<dynamic>(odpoved)[typ];
+            return pocet == null ? 0 : pocet;
+        }
+
         private string PrevedSlovnikParametruNaString(Dictionary<string, string> parametry)
         {
             if (parametry == null)
@@ -101,10 +124,17 @@ namespace ProjektSTI
             return vsechnySoubory;
         }
 
-        public List<string> CyklujRequesty(string url)
+        public List<string> CyklujRequesty(string url, Dictionary<string, string> nastaveni = null)
         {
             List<string> vsechnyOdpovedi = new List<string>();
-            Dictionary<string, string> nastaveni = new Dictionary<string, string>() { { "per_page", "50" }, { "page", "0" } };
+            if (nastaveni == null)
+            {
+                nastaveni = new Dictionary<string, string>() { { "per_page", "50" }, { "page", "0" } };
+            }else
+            {
+                nastaveni.Add("per_page", "50");
+                nastaveni.Add("page", "0");
+            }
             string odpoved = "";
             while (odpoved != "[\n\n]\n")
             {

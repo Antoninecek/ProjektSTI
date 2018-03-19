@@ -21,35 +21,41 @@ namespace ProjektSTI
 
         private async void button1_Click(object sender, EventArgs e)
         {
-            var souboryTask = File.VratSouboryCommituDoCasuAsync(DateTime.Now.AddYears(-5));
+            //var souboryTask = File.VratSouboryCommituDoCasuAsync(DateTime.Now.AddYears(-5));
 
-            var javaSouboryTask = RootObject.VratSouboryUrcitehoTypuRepozitareAsync("java");
+            //var javaSouboryTask = RootObject.VratSouboryUrcitehoTypuRepozitareAsync("java");
 
-            System.Diagnostics.Debug.WriteLine("cekame");
+            //System.Diagnostics.Debug.WriteLine("cekame");
 
-            var javaSoubory = await javaSouboryTask;
-            System.Diagnostics.Debug.WriteLine("java rdy");
+            //var javaSoubory = await javaSouboryTask;
+            //System.Diagnostics.Debug.WriteLine("java rdy");
 
-            var soubory = await souboryTask;
-            System.Diagnostics.Debug.WriteLine("soubory rdy");
-
-
-            //var soubory = File.VratSouboryCommituDoCasu(DateTime.Now.AddYears(-5));
-            //var javaSoubory = RootObject.VratSouboryUrcitehoTypuRepozitare("java");
+            //var soubory = await souboryTask;
+            //System.Diagnostics.Debug.WriteLine("soubory rdy");
 
 
-            var pocetRadku = RootObject.SpocitejPocetRadkuSadySouboru(javaSoubory);
+            ////var soubory = File.VratSouboryCommituDoCasu(DateTime.Now.AddYears(-5));
+            ////var javaSoubory = RootObject.VratSouboryUrcitehoTypuRepozitare("java");
 
-            System.Diagnostics.Debug.WriteLine(soubory.Count);
-            System.Diagnostics.Debug.WriteLine(javaSoubory.Count);
-            System.Diagnostics.Debug.WriteLine(pocetRadku);
+
+            //var pocetRadku = RootObject.SpocitejPocetRadkuSadySouboru(javaSoubory);
+
+            //System.Diagnostics.Debug.WriteLine(soubory.Count);
+            //System.Diagnostics.Debug.WriteLine(javaSoubory.Count);
+            //System.Diagnostics.Debug.WriteLine(pocetRadku);
+
+            DataMiner dm = new DataMiner();
+            //var a = await dm.VratPrehledRadkuJazykuRepozitareAsync("PHP");
+            var commity = dm.VratCommityJednohoSouboru("JAVASOUBOR.java");
+            var detail = dm.VratDetailCommitu(commity.First().sha);
+            foreach(var soubor in detail.files)
+            {
+                if(soubor.filename == "JAVASOUBOR.java")
+                {
+                    // tady vezmu cas, pridani, odebrani
+                }
+            }
             
-        }
-
-        
-        public void vypis(object a)
-        {
-            System.Diagnostics.Debug.WriteLine(a);
         }
 
 
