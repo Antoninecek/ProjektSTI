@@ -8,6 +8,9 @@ namespace ProjektSTI
 {
     static class Program
     {
+
+        public static Form1 form1;
+
         /// <summary>
         /// Hlavní vstupní bod aplikace.
         /// </summary>
@@ -16,7 +19,8 @@ namespace ProjektSTI
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            form1 = new Form1();
+            Application.Run(form1);
         }
     }
 }

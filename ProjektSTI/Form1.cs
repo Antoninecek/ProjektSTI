@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,8 @@ namespace ProjektSTI
     public partial class Form1 : Form
     {
         static System.Windows.Forms.Timer casovac = new System.Windows.Forms.Timer();
-        static Cas cas = new Cas(5000);
+        static Cas cas = new Cas(10000);
+        static Stopwatch sw = new Stopwatch();
 
         public Form1()
         {
@@ -25,26 +27,23 @@ namespace ProjektSTI
             //casovac.Interval = 3600000;
             casovac.Interval = 1000;
             casovac.Start();
+            sw.Restart();
         }
 
-        private static void ZpracovaniCasovace(Object objekt, EventArgs eventargs)
+        private static async void ZpracovaniCasovace(Object objekt, EventArgs eventargs)
         {
+            Program.form1.richTextBox1.AppendText((Math.Round((Decimal)sw.ElapsedMilliseconds/1000)).ToString() + " sekund \n");
             cas.OdectiSekunduAktualnihoCasu();
-            System.Diagnostics.Debug.WriteLine(cas.VratAktualniCasFormat());
+            Program.form1.richTextBox1.AppendText(cas.VratAktualniCasFormat() + "\n");
             if (cas.VratAktualniCasMs() == 0)
             {
-                new Thread(async () =>
-                {
-                    Thread.CurrentThread.IsBackground = true;
-
-                    Sluzba s = new Sluzba();
-                    var a = await s.VratSouboryCommituPoCaseAsync(DateTime.Now.AddYears(-5));
-                //var a = await s.VratPrehledRadkuJazykuRepozitareAsync("java");
-                System.Diagnostics.Debug.WriteLine(a.Count);
-
-                }).Start();
+                Sluzba s = new Sluzba();
+                Program.form1.richTextBox2.AppendText("Zpracovavam commity" + "\n");
+                var commity = await s.VratSouboryCommituPoCaseAsync(DateTime.Now.AddYears(-5));
+                Program.form1.richTextBox2.AppendText("Pocet commitu: " + commity.Count + "\n");
+                var jazyky = await s.VratPrehledRadkuJazykuRepozitareAsync("java");
+                Program.form1.richTextBox2.AppendText("Pocet radku jazyku: " + jazyky.ToString() + "\n");
             }
-            
         }
 
         private async void button1_Click(object sender, EventArgs e)
@@ -59,6 +58,11 @@ namespace ProjektSTI
 
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
         {
 
         }
