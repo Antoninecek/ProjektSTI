@@ -11,12 +11,100 @@ using System.Threading.Tasks;
 
 namespace ProjektSTI
 {
+
+    class Sluzba : ISluzba
+    {
+        /// <summary>
+        /// Vraci vsechny soubory vsech commitu uskutecnenych po case.
+        /// </summary>
+        /// <param name="cas">doba, od ktere se zacnou vyhledavat commity</param>
+        /// <returns>List souboru</returns>
+        public async Task<List<File>> VratSouboryCommituPoCaseAsync(DateTime cas)
+        {
+            return await File.VratSouboryCommituDoCasuAsync(cas);
+        }
+
+        /// <summary>
+        /// Vraci pocet radku od urciteho jazyka v repozitari.
+        /// </summary>
+        /// <param name="typ">Nazev jazyka eg. java, PHP, ...</param>
+        /// <returns>pocet radku</returns>
+        public async Task<Decimal> VratPrehledRadkuJazykuRepozitareAsync(string typ)
+        {
+            DataMiner dm = new DataMiner();
+            return await dm.VratPrehledRadkuJazykuRepozitareAsync(typ);
+        }
+
+        /// <summary>
+        /// Vraci objekty pro statisticke vyjadreny zavislosti mezi casem commitu a poctem zmenenych radku.
+        /// </summary>
+        /// <param name="cesta">cesta k souboru</param>
+        /// <returns>List objektu s udajema pro statisticke vyuziti.</returns>
+        public async Task<List<StatistikaSouboru>> VratStatistikuZmenyRadkuSouboruAsync(string cesta)
+        {
+            return await StatistikaSouboru.VratStatistikuZmenyRadkuSouboruAsync(cesta);
+        }
+    }
+
+    class Cas
+    {
+        private Decimal _defaultni_ms { get; set; }
+        private Decimal _aktualni_ms { get; set; }
+
+        public Cas(Decimal ms)
+        {
+            _defaultni_ms = ms;
+            _aktualni_ms = ms;
+        }
+
+        public void OdectiSekunduAktualnihoCasu()
+        {
+            if (_aktualni_ms != 0) {
+                _aktualni_ms -= 1000;
+            } else
+            {
+                ResetujAktualniCas();
+            }
+        }
+
+        public void ResetujAktualniCas()
+        {
+            _aktualni_ms = _defaultni_ms;
+        }
+
+        public string VratAktualniCasFormat()
+        {
+            return "Aktualni cas: " + VratAktualniCasHodiny() + ":" + VratAktualniCasMinuty() + ":" + VratAktualniCasSekundy();
+        }
+
+        private Decimal VratAktualniCasHodiny()
+        {
+            return Math.Floor(_aktualni_ms / 3600000);
+        }
+
+        private Decimal VratAktualniCasMinuty()
+        {
+            return Math.Floor(_aktualni_ms / 60000);
+        }
+
+        private Decimal VratAktualniCasSekundy()
+        {
+            return Math.Floor(_aktualni_ms / 1000);
+        }
+
+        public Decimal VratAktualniCasMs()
+        {
+            return _aktualni_ms;
+        }
+
+    }
+
     class DataMiner
     {
         public DataMiner()
         {
             AdresaServer = "http://api.github.com";
-            Repozitar = "sklad";
+            Repozitar = "TEST";
             Uzivatel = "Antoninecek";
         }
         public string AdresaServer { get; set; }
@@ -59,6 +147,11 @@ namespace ProjektSTI
             return responseFromServer;
         }
 
+        /// <summary>
+        /// vraci vsechny commity pro jeden soubor
+        /// </summary>
+        /// <param name="cesta"></param>
+        /// <returns></returns>
         public List<DetailZaznamu> VratCommityJednohoSouboru(string cesta)
         {
             var odpovedi = CyklujRequesty(AdresaServer + "/repos/" + Uzivatel + "/" + Repozitar + "/commits", new Dictionary<string, string>() { { "path", cesta } });
@@ -75,13 +168,23 @@ namespace ProjektSTI
             return await Task.Run(() => VratPrehledRadkuJazykuRepozitare(typ));
         }
 
+        /// <summary>
+        /// vraci pocet radku kodu jazyka v repu
+        /// </summary>
+        /// <param name="typ"></param>
+        /// <returns></returns>
         public Decimal VratPrehledRadkuJazykuRepozitare(string typ)
         {
             var odpoved = UdelejRequestGitHub(AdresaServer + "/repos/" + Uzivatel + "/" + Repozitar + "/" + "languages");
             var pocet = JsonConvert.DeserializeObject<dynamic>(odpoved)[typ];
-            return pocet == null ? 0 : pocet;
+            return pocet ?? 0;
         }
 
+        /// <summary>
+        /// Pro zpracovani GET requestu je potreba mit string
+        /// </summary>
+        /// <param name="parametry"></param>
+        /// <returns></returns>
         private string PrevedSlovnikParametruNaString(Dictionary<string, string> parametry)
         {
             if (parametry == null)
@@ -172,6 +275,45 @@ namespace ProjektSTI
             return JsonConvert.DeserializeObject<RootObject[]>(odpoved).ToList();
         }
 
+    }
+
+    public class StatistikaSouboru
+    {
+        public StatistikaSouboru() { }
+        public string nazev { get; set; }
+        public DateTime cas_commitu { get; set; }
+        public string sha { get; set; }
+        public Decimal pridane_radky { get; set; }
+        public Decimal odebrane_radky { get; set; }
+        public string status { get; set; }
+
+        public static async Task<List<StatistikaSouboru>> VratStatistikuZmenyRadkuSouboruAsync(string cesta)
+        {
+            return await Task.Run(() => VratStatistikuZmenyRadkuSouboru(cesta));
+        }
+
+        public static List<StatistikaSouboru> VratStatistikuZmenyRadkuSouboru(string cesta)
+        {
+            DataMiner dm = new DataMiner();
+            var commity = dm.VratCommityJednohoSouboru("JAVASOUBOR.java");
+            List<DetailZaznamu> detaily = new List<DetailZaznamu>();
+            foreach (var commit in commity)
+            {
+                detaily.Add(dm.VratDetailCommitu(commit.sha));
+            }
+            List<StatistikaSouboru> statistiky = new List<StatistikaSouboru>();
+            foreach (var detail in detaily)
+            {
+                foreach (var soubor in detail.files)
+                {
+                    if (soubor.filename == "JAVASOUBOR.java")
+                    {
+                        statistiky.Add(new StatistikaSouboru() { sha = soubor.sha, nazev = soubor.filename, cas_commitu = detail.committer.date, odebrane_radky = soubor.deletions, pridane_radky = soubor.additions, status = soubor.status });
+                    }
+                }
+            }
+            return statistiky;
+        }
     }
 
     public class DetailZaznamu
@@ -363,7 +505,7 @@ namespace ProjektSTI
         }
 
         /// <summary>
-        /// main metoda - vrati vsechny soubory a vyfiltruje podle koncovky typ souboru
+        /// vrati vsechny soubory a vyfiltruje podle koncovky typ souboru
         /// </summary>
         /// <param name="typ">koncovka souboru</param>
         /// <returns></returns>

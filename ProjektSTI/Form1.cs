@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -14,48 +15,46 @@ namespace ProjektSTI
 {
     public partial class Form1 : Form
     {
+        static System.Windows.Forms.Timer casovac = new System.Windows.Forms.Timer();
+        static Cas cas = new Cas(5000);
+
         public Form1()
         {
             InitializeComponent();
+            casovac.Tick += new EventHandler(ZpracovaniCasovace);
+            //casovac.Interval = 3600000;
+            casovac.Interval = 1000;
+            casovac.Start();
+        }
+
+        private static void ZpracovaniCasovace(Object objekt, EventArgs eventargs)
+        {
+            cas.OdectiSekunduAktualnihoCasu();
+            System.Diagnostics.Debug.WriteLine(cas.VratAktualniCasFormat());
+            if (cas.VratAktualniCasMs() == 0)
+            {
+                new Thread(async () =>
+                {
+                    Thread.CurrentThread.IsBackground = true;
+
+                    Sluzba s = new Sluzba();
+                    var a = await s.VratSouboryCommituPoCaseAsync(DateTime.Now.AddYears(-5));
+                //var a = await s.VratPrehledRadkuJazykuRepozitareAsync("java");
+                System.Diagnostics.Debug.WriteLine(a.Count);
+
+                }).Start();
+            }
+            
         }
 
         private async void button1_Click(object sender, EventArgs e)
         {
-            //var souboryTask = File.VratSouboryCommituDoCasuAsync(DateTime.Now.AddYears(-5));
-
-            //var javaSouboryTask = RootObject.VratSouboryUrcitehoTypuRepozitareAsync("java");
-
-            //System.Diagnostics.Debug.WriteLine("cekame");
-
-            //var javaSoubory = await javaSouboryTask;
-            //System.Diagnostics.Debug.WriteLine("java rdy");
-
-            //var soubory = await souboryTask;
-            //System.Diagnostics.Debug.WriteLine("soubory rdy");
+            Sluzba s = new Sluzba();
+            var souboryCommitu = await s.VratSouboryCommituPoCaseAsync(DateTime.Now.AddYears(-5));
 
 
-            ////var soubory = File.VratSouboryCommituDoCasu(DateTime.Now.AddYears(-5));
-            ////var javaSoubory = RootObject.VratSouboryUrcitehoTypuRepozitare("java");
 
 
-            //var pocetRadku = RootObject.SpocitejPocetRadkuSadySouboru(javaSoubory);
-
-            //System.Diagnostics.Debug.WriteLine(soubory.Count);
-            //System.Diagnostics.Debug.WriteLine(javaSoubory.Count);
-            //System.Diagnostics.Debug.WriteLine(pocetRadku);
-
-            DataMiner dm = new DataMiner();
-            //var a = await dm.VratPrehledRadkuJazykuRepozitareAsync("PHP");
-            var commity = dm.VratCommityJednohoSouboru("JAVASOUBOR.java");
-            var detail = dm.VratDetailCommitu(commity.First().sha);
-            foreach(var soubor in detail.files)
-            {
-                if(soubor.filename == "JAVASOUBOR.java")
-                {
-                    // tady vezmu cas, pridani, odebrani
-                }
-            }
-            
         }
 
 
