@@ -104,7 +104,7 @@ namespace ProjektSTI
         public DataMiner()
         {
             AdresaServer = "http://api.github.com";
-            Repozitar = "TEST";
+            Repozitar = "OPS";
             Uzivatel = "Antoninecek";
         }
         public string AdresaServer { get; set; }
@@ -295,7 +295,7 @@ namespace ProjektSTI
         public static List<StatistikaSouboru> VratStatistikuZmenyRadkuSouboru(string cesta)
         {
             DataMiner dm = new DataMiner();
-            var commity = dm.VratCommityJednohoSouboru("JAVASOUBOR.java");
+            var commity = dm.VratCommityJednohoSouboru(cesta);
             List<DetailZaznamu> detaily = new List<DetailZaznamu>();
             foreach (var commit in commity)
             {
@@ -306,7 +306,7 @@ namespace ProjektSTI
             {
                 foreach (var soubor in detail.files)
                 {
-                    if (soubor.filename == "JAVASOUBOR.java")
+                    if (soubor.filename == cesta)
                     {
                         statistiky.Add(new StatistikaSouboru() { sha = soubor.sha, nazev = soubor.filename, cas_commitu = detail.committer.date, odebrane_radky = soubor.deletions, pridane_radky = soubor.additions, status = soubor.status });
                     }
@@ -605,7 +605,6 @@ namespace ProjektSTI
         /// <returns></returns>
         public static List<File> VratSouboryCommituDoCasu(DateTime cas)
         {
-            System.Diagnostics.Debug.WriteLine("commity");
             cas = cas.ToUniversalTime();
             DataMiner dm = new DataMiner();
             List<Zaznam> zaznamy = dm.VratCommity();
