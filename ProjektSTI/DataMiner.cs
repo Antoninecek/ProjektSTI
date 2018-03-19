@@ -29,7 +29,7 @@ namespace ProjektSTI
         /// </summary>
         /// <param name="typ">Nazev jazyka eg. java, PHP, ...</param>
         /// <returns>pocet radku</returns>
-        public async Task<Decimal> VratPrehledRadkuJazykuRepozitareAsync(string typ)
+        public async Task<Decimal> VratPocetBytuJazykuRepozitareAsync(string typ)
         {
             DataMiner dm = new DataMiner();
             return await dm.VratPrehledRadkuJazykuRepozitareAsync(typ);
@@ -43,6 +43,11 @@ namespace ProjektSTI
         public async Task<List<StatistikaSouboru>> VratStatistikuZmenyRadkuSouboruAsync(string cesta)
         {
             return await StatistikaSouboru.VratStatistikuZmenyRadkuSouboruAsync(cesta);
+        }
+
+        public async Task<Decimal> SpocitejPocetRadkuVSouborechUrcitehoTypuAsync(string typ)
+        {
+            return await RootObject.SpocitejPocetRadkuVSouborechUrcitehoTypuAsync(typ);
         }
     }
 
@@ -104,7 +109,7 @@ namespace ProjektSTI
         public DataMiner()
         {
             AdresaServer = "http://api.github.com";
-            Repozitar = "OPS";
+            Repozitar = "TEST";
             Uzivatel = "Antoninecek";
         }
         public string AdresaServer { get; set; }
@@ -463,6 +468,16 @@ namespace ProjektSTI
         public string download_url { get; set; }
         public string type { get; set; }
         public Links _links { get; set; }
+
+        public static Decimal SpocitejPocetRadkuVSouborechUrcitehoTypu(string typ)
+        {
+            return SpocitejPocetRadkuSadySouboru(VratSouboryUrcitehoTypuRepozitare(typ));
+        }
+
+        public static async Task<Decimal> SpocitejPocetRadkuVSouborechUrcitehoTypuAsync(string typ)
+        {
+            return await Task.Run(() => SpocitejPocetRadkuVSouborechUrcitehoTypu(typ));
+        }
 
         /// <summary>
         /// projede sadu souboru a vrati sumu radku

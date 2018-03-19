@@ -26,8 +26,8 @@ namespace ProjektSTI
             casovac.Tick += new EventHandler(ZpracovaniCasovace);
             //casovac.Interval = 3600000;
             casovac.Interval = 1000;
-            casovac.Start();
-            sw.Restart();
+            //casovac.Start();
+            //sw.Restart();
         }
 
         private static async void ZpracovaniCasovace(Object objekt, EventArgs eventargs)
@@ -41,8 +41,8 @@ namespace ProjektSTI
                 Program.form1.richTextBox2.AppendText("Zpracovavam commity" + "\n");
                 var commity = await s.VratSouboryCommituPoCaseAsync(DateTime.Now.AddYears(-5));
                 Program.form1.richTextBox2.AppendText("Pocet commitu: " + commity.Count + "\n");
-                var jazyky = await s.VratPrehledRadkuJazykuRepozitareAsync("java");
-                Program.form1.richTextBox2.AppendText("Pocet radku jazyku: " + jazyky.ToString() + "\n");
+                var jazyky = await s.SpocitejPocetRadkuVSouborechUrcitehoTypuAsync("java");
+                Program.form1.richTextBox2.AppendText("Pocet radku jazyku Java: " + jazyky.ToString() + "\n");
             }
         }
 
@@ -50,9 +50,11 @@ namespace ProjektSTI
         {
             Sluzba s = new Sluzba();
             var souboryCommitu = await s.VratSouboryCommituPoCaseAsync(DateTime.Now.AddYears(-5));
+            var jazyky = await s.SpocitejPocetRadkuVSouborechUrcitehoTypuAsync("java");
+            var js = await s.VratStatistikuZmenyRadkuSouboruAsync("JAVASOUBOR3.java");
+            var radky = RootObject.SpocitejPocetRadkuSadySouboru(RootObject.VratSouboryUrcitehoTypuRepozitare("java"));
 
-
-
+            s.
 
         }
 

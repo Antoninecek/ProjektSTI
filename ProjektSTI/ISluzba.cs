@@ -9,7 +9,8 @@ namespace ProjektSTI
     interface ISluzba
     {
         Task<List<File>> VratSouboryCommituPoCaseAsync(DateTime cas);
-        Task<Decimal> VratPrehledRadkuJazykuRepozitareAsync(string typ);
+        Task<Decimal> VratPocetBytuJazykuRepozitareAsync(string typ);
         Task<List<StatistikaSouboru>> VratStatistikuZmenyRadkuSouboruAsync(string cesta);
+        Task<Decimal> SpocitejPocetRadkuVSouborechUrcitehoTypuAsync(string typ);
     }
 }
