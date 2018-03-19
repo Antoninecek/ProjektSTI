@@ -313,7 +313,7 @@ namespace ProjektSTI
                 {
                     if (soubor.filename == cesta)
                     {
-                        statistiky.Add(new StatistikaSouboru() { sha = soubor.sha, nazev = soubor.filename, cas_commitu = detail.committer.date, odebrane_radky = soubor.deletions, pridane_radky = soubor.additions, status = soubor.status });
+                        statistiky.Add(new StatistikaSouboru() { sha = soubor.sha, nazev = soubor.filename, cas_commitu = detail.commit.committer.date, odebrane_radky = soubor.deletions, pridane_radky = soubor.additions, status = soubor.status });
                     }
                 }
             }
