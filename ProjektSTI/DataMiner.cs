@@ -46,11 +46,23 @@ namespace ProjektSTI
             return await StatistikaSouboru.VratStatistikuZmenyRadkuSouboruAsync(cesta);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="typ"></param>
+        /// <returns></returns>
         public async Task<Decimal> SpocitejPocetRadkuVSouborechUrcitehoTypuAsync(string typ)
         {
             return await RootObject.SpocitejPocetRadkuVSouborechUrcitehoTypuAsync(typ);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lokalniCesta"></param>
+        /// <param name="nazevSouboruGit"></param>
+        /// <param name="shaCommitu"></param>
+        /// <returns>T/F uspech ulozeni souboru</returns>
         public async Task<bool> StahniSouborZGituAsync(string lokalniCesta, string nazevSouboruGit, string shaCommitu)
         {
             return await File.UlozSouborGituAsync(lokalniCesta, nazevSouboruGit, shaCommitu);
@@ -61,7 +73,7 @@ namespace ProjektSTI
         /// </summary>
         /// <param name="soubory"></param>
         /// <param name="cesta"></param>
-        /// <returns></returns>
+        /// <returns>T/F uspech ulozeni souboru</returns>
         public async Task<bool> VytvorExcelSeznamCommituAsync(List<Tuple<string, DateTime>> soubory, string cesta)
         {
             return await Excel.VytvorExcelSeznamCommituAsync(soubory, cesta);
