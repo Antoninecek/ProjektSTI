@@ -79,7 +79,7 @@ namespace ProjektSTI
 
         public string VratAktualniCasFormat()
         {
-            return "Aktualni cas: " + VratAktualniCasHodiny() + ":" + VratAktualniCasMinuty() + ":" + VratAktualniCasSekundy();
+            return VratAktualniCasHodiny() + "h " + VratAktualniCasMinuty() + "m " + VratAktualniCasSekundy() + "s";
         }
 
         private Decimal VratAktualniCasHodiny()
@@ -89,12 +89,12 @@ namespace ProjektSTI
 
         private Decimal VratAktualniCasMinuty()
         {
-            return Math.Floor(_aktualni_ms / 60000);
+            return Math.Floor((_aktualni_ms % 3600000) / 60000);
         }
 
         private Decimal VratAktualniCasSekundy()
         {
-            return Math.Floor(_aktualni_ms / 1000);
+            return Math.Floor(((_aktualni_ms % 3600000) % 60000) / 1000);
         }
 
         public Decimal VratAktualniCasMs()
@@ -134,7 +134,7 @@ namespace ProjektSTI
 
         public string UdelejRequestGitHub(string url, Dictionary<string, string> parametry = null)
         {
-            var txt = System.IO.File.ReadAllText("F:\\STI\\ProjektSTI\\ProjektSTI\\config.json");
+            var txt = System.IO.File.ReadAllText(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory()))+"\\config.json");
             Nastaveni n = JsonConvert.DeserializeObject<Nastaveni>(txt);
             // github api si nekdy doplni nejakej parametr sam, potrebuju zjistit, jestli uz nejakej parametr existuje, abych mohl navazat
             string znak = url.Contains("?") ? "&" : "?";
