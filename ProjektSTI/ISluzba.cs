@@ -12,5 +12,6 @@ namespace ProjektSTI
         Task<Decimal> VratPocetBytuJazykuRepozitareAsync(string typ);
         Task<List<StatistikaSouboru>> VratStatistikuZmenyRadkuSouboruAsync(string cesta);
         Task<Decimal> SpocitejPocetRadkuVSouborechUrcitehoTypuAsync(string typ);
+        Task<bool> StahniSouborZGituAsync(string lokalniCesta, string nazevSouboruGit, string shaCommitu);
     }
 }

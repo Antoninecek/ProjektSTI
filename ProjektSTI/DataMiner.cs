@@ -49,6 +49,11 @@ namespace ProjektSTI
         {
             return await RootObject.SpocitejPocetRadkuVSouborechUrcitehoTypuAsync(typ);
         }
+
+        public async Task<bool> StahniSouborZGituAsync(string lokalniCesta, string nazevSouboruGit, string shaCommitu)
+        {
+            return await File.UlozSouborGituAsync(lokalniCesta, nazevSouboruGit, shaCommitu);
+        }
     }
 
     class Cas
@@ -64,9 +69,11 @@ namespace ProjektSTI
 
         public void OdectiSekunduAktualnihoCasu()
         {
-            if (_aktualni_ms != 0) {
+            if (_aktualni_ms != 0)
+            {
                 _aktualni_ms -= 1000;
-            } else
+            }
+            else
             {
                 ResetujAktualniCas();
             }
@@ -116,6 +123,11 @@ namespace ProjektSTI
         public string Repozitar { get; set; }
         public string Uzivatel { get; set; }
 
+        public string VratObsahSouboruGitu(string nazev, string sha)
+        {
+            return UdelejRequestGitHub("https://raw.githubusercontent.com/" + Uzivatel + "/" + Repozitar + "/" + sha + "/" + nazev);
+        }
+
         public string UdelejRequest(string url)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
@@ -134,7 +146,7 @@ namespace ProjektSTI
 
         public string UdelejRequestGitHub(string url, Dictionary<string, string> parametry = null)
         {
-            var txt = System.IO.File.ReadAllText(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory()))+"\\config.json");
+            var txt = System.IO.File.ReadAllText(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + "\\config.json");
             Nastaveni n = JsonConvert.DeserializeObject<Nastaveni>(txt);
             // github api si nekdy doplni nejakej parametr sam, potrebuju zjistit, jestli uz nejakej parametr existuje, abych mohl navazat
             string znak = url.Contains("?") ? "&" : "?";
@@ -238,7 +250,8 @@ namespace ProjektSTI
             if (nastaveni == null)
             {
                 nastaveni = new Dictionary<string, string>() { { "per_page", "50" }, { "page", "0" } };
-            }else
+            }
+            else
             {
                 nastaveni.Add("per_page", "50");
                 nastaveni.Add("page", "0");
@@ -636,6 +649,45 @@ namespace ProjektSTI
         public static async Task<List<File>> VratSouboryCommituDoCasuAsync(DateTime cas)
         {
             return await Task.Run(() => (VratSouboryCommituDoCasu(cas)));
+        }
+
+        /// <summary>
+        /// bool x = await s.StahniSouborZGituAsync("F:\\STI\\UP\\zk.txt", "zk.txt", "29b5c4800c535320504b05972cdec8d1a503f1ab");
+        /// </summary>
+        /// <param name="cesta">lokalni</param>
+        /// <param name="nazev">na gitu</param>
+        /// <param name="sha">commit sha</param>
+        /// <returns></returns>
+        public static bool UlozSouborGitu(string cesta, string nazev, string sha)
+        {
+            try
+            {
+                DataMiner dm = new DataMiner();
+                string obsah = dm.VratObsahSouboruGitu(nazev, sha);
+                using (FileStream fs = System.IO.File.Create(cesta))
+                {
+                    Byte[] info = new UTF8Encoding(true).GetBytes(obsah);
+                    fs.Write(info, 0, info.Length);
+                }
+
+            }catch (Exception ex)
+            {
+                Console.WriteLine("chyba ukladani");
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cesta">lokalni</param>
+        /// <param name="nazev">na gitu</param>
+        /// <param name="sha">commit sha</param>
+        /// <returns></returns>
+        public static async Task<bool> UlozSouborGituAsync(string cesta, string nazev, string sha)
+        {
+            return await Task.Run(() => UlozSouborGitu(cesta, nazev, sha));
         }
 
     }
