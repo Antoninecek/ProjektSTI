@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -53,6 +54,17 @@ namespace ProjektSTI
         public async Task<bool> StahniSouborZGituAsync(string lokalniCesta, string nazevSouboruGit, string shaCommitu)
         {
             return await File.UlozSouborGituAsync(lokalniCesta, nazevSouboruGit, shaCommitu);
+        }
+
+        /// <summary>
+        /// VytvorExcelSeznamCommituAsync(new List<Tuple<string, DateTime>>() { new Tuple<string, DateTime>("abc", DateTime.Now), new Tuple<string, DateTime>("def", DateTime.Now) }, "F:\\STI\\UP\\a.xlsx");
+        /// </summary>
+        /// <param name="soubory"></param>
+        /// <param name="cesta"></param>
+        /// <returns></returns>
+        public async Task<bool> VytvorExcelSeznamCommituAsync(List<Tuple<string, DateTime>> soubory, string cesta)
+        {
+            return await Excel.VytvorExcelSeznamCommituAsync(soubory, cesta);
         }
     }
 
@@ -670,7 +682,8 @@ namespace ProjektSTI
                     fs.Write(info, 0, info.Length);
                 }
 
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine("chyba ukladani");
                 return false;
@@ -690,6 +703,60 @@ namespace ProjektSTI
             return await Task.Run(() => UlozSouborGitu(cesta, nazev, sha));
         }
 
+    }
+
+    public class Excel
+    {
+        public Excel() { }
+
+        public static async Task<bool> VytvorExcelSeznamCommituAsync(List<Tuple<string, DateTime>> soubory, string cesta)
+        {
+            return await Task.Run(() => VytvorExcelSeznamCommitu(soubory, cesta));
+        }
+
+        private static bool VytvorExcelSeznamCommitu(List<Tuple<string, DateTime>> soubory, string cesta)
+        {
+            using (var package = new ExcelPackage())
+            {
+                try
+                {
+                    // Add a new worksheet to the empty workbook
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Seznam Commitu");
+                    //Add the headers
+                    worksheet.Cells[1, 1].Value = "Nazev";
+                    worksheet.Cells[1, 2].Value = "Nazev";
+
+                    int index = 2;
+
+                    foreach (var tuple in soubory)
+                    {
+                        worksheet.Cells["A" + index].Value = tuple.Item1;
+                        worksheet.Cells["B" + index].Value = tuple.Item2.ToString("dd/MM/yy H:mm:ss");
+                        index++;
+                    }
+
+                    worksheet.View.PageLayoutView = true;
+                    // set some document properties
+                    package.Workbook.Properties.Title = "Commity";
+                    package.Workbook.Properties.Author = "My";
+                    package.Workbook.Properties.Comments = "Komentar";
+
+                    // set some extended property values
+                    package.Workbook.Properties.Company = "JKKK";
+
+                    // set some custom property values
+                    package.Workbook.Properties.SetCustomPropertyValue("Checked by", "US");
+                    package.Workbook.Properties.SetCustomPropertyValue("AssemblyName", "program a EPPlus");
+
+                    package.SaveAs(new FileInfo(cesta));
+                } catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    return false;
+                }
+                return true;
+            }
+        }
     }
 
 }
