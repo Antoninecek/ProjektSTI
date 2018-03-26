@@ -163,8 +163,6 @@ namespace ProjektSTI
             request.Method = "GET";
             request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0";
             request.Headers.Add("Pragma", "no-cache");
-            request.Headers.Set("Pragma", "no-cache");
-            request.Headers["Pragma"] = "no-cache";
             
             request.Headers.Add("Accept-Language", "en-GB,en-US;q=0.8,en;q=0.6");
             request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
