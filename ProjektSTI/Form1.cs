@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Web;
 
 namespace ProjektSTI
 {
@@ -23,6 +24,9 @@ namespace ProjektSTI
         static Stopwatch sw = new Stopwatch();
 
         static Boolean noveSpusteni = true;
+        Boolean openTree = false;
+        static int pocetVsechCommitu = -1;
+        static ArrayList refList = new ArrayList();
 
         public MainForm()
         {
@@ -53,22 +57,12 @@ namespace ProjektSTI
                 Program.MainForm.LogBox.AppendText("---------------- " + DateTime.Now.ToString("hh:mm:ss tt") + " ----------------" + "\n");
                 Program.MainForm.LogBox.AppendText("Zpracovavam commity..." + "\n");
                 var commity = await s.VratSouboryCommituPoCaseAsync(DateTime.Now.AddYears(-5));
-                Program.MainForm.LogBox.AppendText("Pocet commitu: " + commity.Count + "\n");
-
-                foreach (File commit in commity)
-                {
-                    if (!vsechnySoubory.Contains(commit.filename.ToString()))
-                    {
-                        vsechnySoubory.Add(commit.filename.ToString());
-                    }
-                }
-                vsechnySoubory.Sort();
-                VypisSeznamVsechSouboru(vsechnySoubory);
+                VypisSeznamVsechSouboru(commity);
+                Program.MainForm.LogBox.AppendText("Pocet vsech commitu: " + (pocetVsechCommitu+1) + "\n");
 
                 var jazyky = await s.SpocitejPocetRadkuVSouborechUrcitehoTypuAsync("java");
                 Program.MainForm.LogBox.AppendText("Pocet radku jazyku Java: " + jazyky.ToString() + "\n\n");
                 AktivovatTlacitka(true);
-                Program.MainForm.button1.Enabled = true;
             }
             if (cas.VratAktualniCasMs() == 0)
             {
@@ -117,15 +111,26 @@ namespace ProjektSTI
             Program.MainForm.ClearLogBoxButton.Enabled = b;
         }
 
-        private static void VypisSeznamVsechSouboru(ArrayList soubory)
+        private static void VypisSeznamVsechSouboru(List<File> soubory)
         {
-            //Program.MainForm.AllFilesBox.Clear();
-            
-            foreach (String soubor in soubory)
+            foreach (File soubor in soubory)
             {
-                //Program.MainForm.AllFilesBox.AppendText(soubor + "\n");
-                Program.MainForm.AllFilesTreeView.Nodes.Add(soubor);
+                // Vezme URL a vyjme hodnotu "ref"
+                // např.: https://api.github.com/repos/Antoninecek/TEST/contents/JAVASOUBOR.java?ref=4e18d7fe5d58c07b65465002e2ab52869ab3a6c9
+                // rf =  "4e18d7fe5d58c07b65465002e2ab52869ab3a6c9";
+                String rf = HttpUtility.ParseQueryString(new Uri(soubor.contents_url).Query).Get("ref");
+                if (!refList.Contains(rf))
+                {
+                    pocetVsechCommitu++;
+                    refList.Add(rf);
+                    Program.MainForm.AllFilesTreeView.Nodes.Add("commit " + pocetVsechCommitu);
+                    Program.MainForm.AllFilesTreeView.Nodes[pocetVsechCommitu].Nodes.Add(soubor.filename.ToString());
+                } else
+                {
+                    Program.MainForm.AllFilesTreeView.Nodes[pocetVsechCommitu].Nodes.Add(soubor.filename.ToString());
+                }
             }
+            Program.MainForm.OtevriZavriVseButton.Enabled = true;
         }
 
         private static void VypisSeznamZmenenychSouboru(ArrayList soubory)
@@ -171,11 +176,38 @@ namespace ProjektSTI
             Program.MainForm.LogBox.Clear();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void GrafButton_Click(object sender, EventArgs e)
         {
             Form2 GraphForm = new Form2(Program.MainForm.AllFilesTreeView.SelectedNode.Text);
+            GraphForm.Text = "Graf " + Program.MainForm.AllFilesTreeView.SelectedNode.Text;
             GraphForm.Show();
         }
 
+        private void OtevriZavriVseButton_Click(object sender, EventArgs e)
+        {
+            if (openTree)
+            {
+                Program.MainForm.AllFilesTreeView.CollapseAll();
+                openTree = false;
+            } else
+            {
+                Program.MainForm.AllFilesTreeView.ExpandAll();
+                openTree = true;
+            }
+
+            
+        }
+
+        private void AllFilesTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (Program.MainForm.AllFilesTreeView.SelectedNode.Text.EndsWith(".java"))
+            {
+                Program.MainForm.GrafButton.Enabled = true;
+            } else
+            {
+                Program.MainForm.GrafButton.Enabled = false;
+            }
+            
+        }
     }
 }
