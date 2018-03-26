@@ -34,8 +34,9 @@
             this.ClearLogBoxButton = new System.Windows.Forms.Button();
             this.ChangedFilesBox = new System.Windows.Forms.RichTextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.GrafButton = new System.Windows.Forms.Button();
             this.AllFilesTreeView = new System.Windows.Forms.TreeView();
+            this.OtevriZavriVseButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -98,16 +99,16 @@
             this.pictureBox1.TabIndex = 7;
             this.pictureBox1.TabStop = false;
             // 
-            // button1
+            // GrafButton
             // 
-            this.button1.Enabled = false;
-            this.button1.Location = new System.Drawing.Point(295, 449);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 8;
-            this.button1.Text = "Graf";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.GrafButton.Enabled = false;
+            this.GrafButton.Location = new System.Drawing.Point(305, 449);
+            this.GrafButton.Name = "GrafButton";
+            this.GrafButton.Size = new System.Drawing.Size(75, 23);
+            this.GrafButton.TabIndex = 8;
+            this.GrafButton.Text = "Graf";
+            this.GrafButton.UseVisualStyleBackColor = true;
+            this.GrafButton.Click += new System.EventHandler(this.GrafButton_Click);
             // 
             // AllFilesTreeView
             // 
@@ -116,6 +117,18 @@
             this.AllFilesTreeView.PathSeparator = "/";
             this.AllFilesTreeView.Size = new System.Drawing.Size(222, 386);
             this.AllFilesTreeView.TabIndex = 9;
+            this.AllFilesTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.AllFilesTreeView_AfterSelect);
+            // 
+            // OtevriZavriVseButton
+            // 
+            this.OtevriZavriVseButton.Enabled = false;
+            this.OtevriZavriVseButton.Location = new System.Drawing.Point(281, 28);
+            this.OtevriZavriVseButton.Name = "OtevriZavriVseButton";
+            this.OtevriZavriVseButton.Size = new System.Drawing.Size(99, 23);
+            this.OtevriZavriVseButton.TabIndex = 10;
+            this.OtevriZavriVseButton.Text = "Otevři/Zavři vše";
+            this.OtevriZavriVseButton.UseVisualStyleBackColor = true;
+            this.OtevriZavriVseButton.Click += new System.EventHandler(this.OtevriZavriVseButton_Click);
             // 
             // MainForm
             // 
@@ -123,8 +136,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(688, 487);
+            this.Controls.Add(this.OtevriZavriVseButton);
             this.Controls.Add(this.AllFilesTreeView);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.GrafButton);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.ChangedFilesBox);
             this.Controls.Add(this.ClearLogBoxButton);
@@ -147,8 +161,9 @@
         private System.Windows.Forms.Button ClearLogBoxButton;
         private System.Windows.Forms.RichTextBox ChangedFilesBox;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button GrafButton;
         private System.Windows.Forms.TreeView AllFilesTreeView;
+        private System.Windows.Forms.Button OtevriZavriVseButton;
     }
 }
 
