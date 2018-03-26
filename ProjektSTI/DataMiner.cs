@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Cache;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -149,16 +150,29 @@ namespace ProjektSTI
 
         public string VratObsahSouboruGitu(string nazev, string sha)
         {
-            return UdelejRequestGitHub("https://raw.githubusercontent.com/" + Uzivatel + "/" + Repozitar + "/" + sha + "/" + nazev);
+            return UdelejRequest("https://raw.githubusercontent.com/" + Uzivatel + "/" + Repozitar + "/" + sha + "/" + nazev);
         }
 
         public string UdelejRequest(string url)
         {
+            string znak = url.Contains("?") ? "&" : "?";
+            Random rd = new Random();
+            url = url + znak + "random=" + rd.Next();
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             //request.ContentType = "application/vnd.github.v3+json";
             request.Method = "GET";
             request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0";
-            //request.Headers.Add("Authorization", "token " + Token);
+            request.Headers.Add("Pragma", "no-cache");
+            request.Headers.Set("Pragma", "no-cache");
+            request.Headers["Pragma"] = "no-cache";
+            
+            request.Headers.Add("Accept-Language", "en-GB,en-US;q=0.8,en;q=0.6");
+            request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+            request.ProtocolVersion = HttpVersion.Version11;
+            request.KeepAlive = true;
+            HttpRequestCachePolicy noCachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
+            request.CachePolicy = noCachePolicy;
+            request.Host = "raw.githubusercontent.com";
             WebResponse response = request.GetResponse();
             Stream dataStream = response.GetResponseStream();
             StreamReader reader = new StreamReader(dataStream);
@@ -175,6 +189,7 @@ namespace ProjektSTI
             // github api si nekdy doplni nejakej parametr sam, potrebuju zjistit, jestli uz nejakej parametr existuje, abych mohl navazat
             string znak = url.Contains("?") ? "&" : "?";
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url + znak + "access_token=" + n.githubToken + "&" + PrevedSlovnikParametruNaString(parametry));
+            request.CachePolicy = new RequestCachePolicy(RequestCacheLevel.Reload);
             request.ContentType = "application/vnd.github.v3+json";
             request.Method = "GET";
             request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0";
@@ -524,7 +539,7 @@ namespace ProjektSTI
         public static Decimal SpocitejPocetRadkuSadySouboru(List<RootObject> soubory)
         {
             // znak /n == newline == uvozuje dalsi radek == pocet radku bude vzdycky n+1
-            return SpocitejPocetZnakuSadySouboru(soubory, "\n") + 1;
+            return SpocitejPocetZnakuSadySouboru(soubory, "\n") + soubory.Count;
         }
 
         /// <summary>
@@ -649,6 +664,7 @@ namespace ProjektSTI
         public string raw_url { get; set; }
         public string contents_url { get; set; }
         public string patch { get; set; }
+        public DateTime datum_commitu { get; set; }
 
         /// <summary>
         /// main metoda pro ziskani souboru z commitu uskutecnenych po zadane dobe
@@ -665,6 +681,10 @@ namespace ProjektSTI
             foreach (var z in zaznamyHodina)
             {
                 var detail = dm.VratDetailCommitu(z.sha);
+                foreach(var det in detail.files)
+                {
+                    det.datum_commitu = z.commit.committer.date.ToLocalTime();
+                }
                 soubory.AddRange(detail.files);
             }
             return soubory;
