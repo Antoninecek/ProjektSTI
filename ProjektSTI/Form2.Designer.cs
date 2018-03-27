@@ -55,7 +55,7 @@
             this.chart1.Name = "chart1";
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
-            series1.Name = "Series1";
+            series1.Name = "Počet přidaných řádků";
             this.chart1.Series.Add(series1);
             this.chart1.Size = new System.Drawing.Size(468, 421);
             this.chart1.TabIndex = 1;
@@ -80,6 +80,6 @@
         #endregion
 
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
+        public System.Windows.Forms.DataVisualization.Charting.Chart chart1;
     }
 }

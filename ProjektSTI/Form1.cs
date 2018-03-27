@@ -176,11 +176,22 @@ namespace ProjektSTI
             Program.MainForm.LogBox.Clear();
         }
 
-        private void GrafButton_Click(object sender, EventArgs e)
+        private async void GrafButton_Click(object sender, EventArgs e)
         {
             Form2 GraphForm = new Form2(Program.MainForm.AllFilesTreeView.SelectedNode.Text);
             GraphForm.Text = "Graf " + Program.MainForm.AllFilesTreeView.SelectedNode.Text;
             GraphForm.Show();
+            Sluzba sluzba = new Sluzba();
+
+            String selected_file = Program.MainForm.AllFilesTreeView.SelectedNode.Text;
+            
+            var stat = await sluzba.VratStatistikuZmenyRadkuSouboruAsync(selected_file);
+            GraphForm.chart1.Series["Počet přidaných řádků"].Points.Clear();
+            stat.Reverse();
+            foreach (var commit in stat)
+            {
+                GraphForm.chart1.Series["Počet přidaných řádků"].Points.AddY(commit.pridane_radky - commit.odebrane_radky);
+            };
         }
 
         private void OtevriZavriVseButton_Click(object sender, EventArgs e)
