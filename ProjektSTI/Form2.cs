@@ -16,7 +16,7 @@ namespace ProjektSTI
         {
             InitializeComponent();
             Form2.ActiveForm.Text = "Graf: " + FileName;
-            label1.Text = "asd: " + FileName;
+            label1.Text = "Změny počtu řádků souboru " + FileName;
         }
 
         private void Form2_Load(object sender, EventArgs e)
