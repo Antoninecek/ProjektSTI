@@ -14,7 +14,7 @@ namespace ProjektSTI
         public void OdesliEmail()
         {
             SmtpClient client = new SmtpClient();
-            client.Credentials = new NetworkCredential("frantisek.jukl@gmail.com", "FR4N7!53KJUKL");
+            client.Credentials = new NetworkCredential("frantisek.jukl@gmail.com", "pass");
             client.Port = 587;
             client.Host = "smtp.gmail.com";
             client.EnableSsl = true;
