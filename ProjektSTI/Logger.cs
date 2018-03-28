@@ -13,6 +13,7 @@ namespace ProjektSTI
 
         public void OdesliEmail()
         {
+<<<<<<< HEAD
             SmtpClient client = new SmtpClient();
             client.Credentials = new NetworkCredential("frantisek.jukl@gmail.com", "pass");
             client.Port = 587;
@@ -33,6 +34,23 @@ namespace ProjektSTI
 
                 client.Send(mmsg);
                 
+=======
+            try
+            {
+                MailMessage mail = new MailMessage();
+                SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
+
+                mail.From = new MailAddress("mail_from");
+                mail.To.Add("mail_to");
+                mail.Subject = "Test Mail";
+                mail.Body = "Ondrášek si poslal mail ze C#";
+
+                SmtpServer.Port = 587;
+                SmtpServer.Credentials = new System.Net.NetworkCredential("login", "password");
+                SmtpServer.EnableSsl = true;
+
+                SmtpServer.Send(mail);
+>>>>>>> 2844fcd11fe8d5e10b21e26431200142bff7e84f
             }
             catch (Exception ex)
             {
