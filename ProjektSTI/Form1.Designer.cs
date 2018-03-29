@@ -32,11 +32,12 @@
             this.LogBox = new System.Windows.Forms.RichTextBox();
             this.TimeShower = new System.Windows.Forms.Label();
             this.ClearLogBoxButton = new System.Windows.Forms.Button();
-            this.ChangedFilesBox = new System.Windows.Forms.RichTextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.GrafButton = new System.Windows.Forms.Button();
-            this.AllFilesTreeView = new System.Windows.Forms.TreeView();
+            this.VsechnyCommityTreeView = new System.Windows.Forms.TreeView();
             this.OtevriZavriVseButton = new System.Windows.Forms.Button();
+            this.NoveCommityTreeView = new System.Windows.Forms.TreeView();
+            this.PresunoutButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -81,15 +82,6 @@
             this.ClearLogBoxButton.UseVisualStyleBackColor = true;
             this.ClearLogBoxButton.Click += new System.EventHandler(this.ClearLogBoxButton_Click);
             // 
-            // ChangedFilesBox
-            // 
-            this.ChangedFilesBox.Location = new System.Drawing.Point(452, 57);
-            this.ChangedFilesBox.Name = "ChangedFilesBox";
-            this.ChangedFilesBox.ReadOnly = true;
-            this.ChangedFilesBox.Size = new System.Drawing.Size(222, 386);
-            this.ChangedFilesBox.TabIndex = 6;
-            this.ChangedFilesBox.Text = "";
-            // 
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.Color.Red;
@@ -110,14 +102,14 @@
             this.GrafButton.UseVisualStyleBackColor = true;
             this.GrafButton.Click += new System.EventHandler(this.GrafButton_Click);
             // 
-            // AllFilesTreeView
+            // VsechnyCommityTreeView
             // 
-            this.AllFilesTreeView.Location = new System.Drawing.Point(224, 57);
-            this.AllFilesTreeView.Name = "AllFilesTreeView";
-            this.AllFilesTreeView.PathSeparator = "/";
-            this.AllFilesTreeView.Size = new System.Drawing.Size(222, 386);
-            this.AllFilesTreeView.TabIndex = 9;
-            this.AllFilesTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.AllFilesTreeView_AfterSelect);
+            this.VsechnyCommityTreeView.Location = new System.Drawing.Point(224, 57);
+            this.VsechnyCommityTreeView.Name = "VsechnyCommityTreeView";
+            this.VsechnyCommityTreeView.PathSeparator = "/";
+            this.VsechnyCommityTreeView.Size = new System.Drawing.Size(222, 386);
+            this.VsechnyCommityTreeView.TabIndex = 9;
+            this.VsechnyCommityTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.VsechnyCommityTreeView_AfterSelect);
             // 
             // OtevriZavriVseButton
             // 
@@ -130,17 +122,38 @@
             this.OtevriZavriVseButton.UseVisualStyleBackColor = true;
             this.OtevriZavriVseButton.Click += new System.EventHandler(this.OtevriZavriVseButton_Click);
             // 
+            // NoveCommityTreeView
+            // 
+            this.NoveCommityTreeView.Location = new System.Drawing.Point(452, 57);
+            this.NoveCommityTreeView.Name = "NoveCommityTreeView";
+            this.NoveCommityTreeView.PathSeparator = "/";
+            this.NoveCommityTreeView.Size = new System.Drawing.Size(222, 386);
+            this.NoveCommityTreeView.TabIndex = 11;
+            this.NoveCommityTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.NoveCommityTreeView_AfterSelect);
+            // 
+            // PresunoutButton
+            // 
+            this.PresunoutButton.Enabled = false;
+            this.PresunoutButton.Location = new System.Drawing.Point(532, 449);
+            this.PresunoutButton.Name = "PresunoutButton";
+            this.PresunoutButton.Size = new System.Drawing.Size(75, 23);
+            this.PresunoutButton.TabIndex = 12;
+            this.PresunoutButton.Text = "Přesunout";
+            this.PresunoutButton.UseVisualStyleBackColor = true;
+            this.PresunoutButton.Click += new System.EventHandler(this.PresunoutButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(688, 487);
+            this.ClientSize = new System.Drawing.Size(687, 487);
+            this.Controls.Add(this.PresunoutButton);
+            this.Controls.Add(this.NoveCommityTreeView);
             this.Controls.Add(this.OtevriZavriVseButton);
-            this.Controls.Add(this.AllFilesTreeView);
+            this.Controls.Add(this.VsechnyCommityTreeView);
             this.Controls.Add(this.GrafButton);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.ChangedFilesBox);
             this.Controls.Add(this.ClearLogBoxButton);
             this.Controls.Add(this.TimeShower);
             this.Controls.Add(this.LogBox);
@@ -159,11 +172,12 @@
         private System.Windows.Forms.RichTextBox LogBox;
         private System.Windows.Forms.Label TimeShower;
         private System.Windows.Forms.Button ClearLogBoxButton;
-        private System.Windows.Forms.RichTextBox ChangedFilesBox;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button GrafButton;
-        private System.Windows.Forms.TreeView AllFilesTreeView;
+        private System.Windows.Forms.TreeView VsechnyCommityTreeView;
         private System.Windows.Forms.Button OtevriZavriVseButton;
+        private System.Windows.Forms.TreeView NoveCommityTreeView;
+        private System.Windows.Forms.Button PresunoutButton;
     }
 }
 
