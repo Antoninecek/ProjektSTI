@@ -272,7 +272,7 @@ namespace ProjektSTI
 
         private void AllFilesTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if (Program.MainForm.AllFilesTreeView.SelectedNode.Text.EndsWith(".java"))
+            if (Program.MainForm.VsechnyCommityTreeView.SelectedNode.Text.EndsWith(".java"))
             {
                 Program.MainForm.GrafButton.Enabled = true;
             } else
