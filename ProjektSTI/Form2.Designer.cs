@@ -52,12 +52,15 @@
             legend1.Name = "Legend1";
             this.chart1.Legends.Add(legend1);
             this.chart1.Location = new System.Drawing.Point(12, 25);
+            this.chart1.MaximumSize = new System.Drawing.Size(1920, 1080);
+            this.chart1.MinimumSize = new System.Drawing.Size(450, 450);
+
             this.chart1.Name = "chart1";
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
             series1.Name = "Počet přidaných řádků";
             this.chart1.Series.Add(series1);
-            this.chart1.Size = new System.Drawing.Size(468, 421);
+            this.chart1.Size = new System.Drawing.Size(450, 450);
             this.chart1.TabIndex = 1;
             this.chart1.Text = "chart1";
             // 
@@ -65,7 +68,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(492, 458);
+            this.ClientSize = new System.Drawing.Size(474, 486);
             this.Controls.Add(this.chart1);
             this.Controls.Add(this.label1);
             this.Name = "Form2";

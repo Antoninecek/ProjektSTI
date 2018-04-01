@@ -31,7 +31,6 @@ namespace ProjektSTI
             }
             catch (Exception ex)
             {
-
                 //throw;
             }
         }
