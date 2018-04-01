@@ -45,6 +45,7 @@ namespace ProjektSTI
         // pocet všech nových commitu behem cele doby
         static int pocetVsechNovychCommitu = -1;
 
+
         public MainForm()
         {
             InitializeComponent();
@@ -195,7 +196,6 @@ namespace ProjektSTI
             }
 
         }
-
         private void ClearLogBoxButton_Click(object sender, EventArgs e)
         {
             Program.MainForm.LogBox.Clear();
@@ -209,7 +209,6 @@ namespace ProjektSTI
             GraphForm.Text = "Graf " + selected_file;
             GraphForm.Show();
             Sluzba sluzba = new Sluzba();
-
             var stat = await sluzba.VratStatistikuZmenyRadkuSouboruAsync(selected_file);
             GraphForm.chart1.Series["Počet přidaných řádků"].Points.Clear();
             stat.Reverse();
@@ -268,6 +267,19 @@ namespace ProjektSTI
                 Program.MainForm.PresunoutButton.Enabled = false;
             }
 
+            
+        }
+
+        private void AllFilesTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (Program.MainForm.AllFilesTreeView.SelectedNode.Text.EndsWith(".java"))
+            {
+                Program.MainForm.GrafButton.Enabled = true;
+            } else
+            {
+                Program.MainForm.GrafButton.Enabled = false;
+            }
+            
         }
     }
 }

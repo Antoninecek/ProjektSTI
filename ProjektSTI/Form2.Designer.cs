@@ -54,6 +54,7 @@
             this.chart1.Location = new System.Drawing.Point(12, 25);
             this.chart1.MaximumSize = new System.Drawing.Size(1920, 1080);
             this.chart1.MinimumSize = new System.Drawing.Size(450, 450);
+
             this.chart1.Name = "chart1";
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
