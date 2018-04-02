@@ -18,13 +18,13 @@ namespace ProjektSTI
                 MailMessage mail = new MailMessage();
                 SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
 
-                mail.From = new MailAddress("mail_from");
-                mail.To.Add("mail_to");
-                mail.Subject = "Test Mail";
-                mail.Body = "Ondrášek si poslal mail ze C#";
+                mail.From = new MailAddress("juklkokr@gmail.com");
+                mail.To.Add("juklkokr@gmail.com");
+                mail.Subject = "Error";
+                mail.Body = "Error";
 
                 SmtpServer.Port = 587;
-                SmtpServer.Credentials = new System.Net.NetworkCredential("login", "password");
+                SmtpServer.Credentials = new System.Net.NetworkCredential("juklkokr", "juklkokr123");
                 SmtpServer.EnableSsl = true;
 
                 SmtpServer.Send(mail);
