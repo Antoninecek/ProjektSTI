@@ -163,14 +163,13 @@ namespace ProjektSTI
             request.Method = "GET";
             request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0";
             request.Headers.Add("Pragma", "no-cache");
-            
+
             request.Headers.Add("Accept-Language", "en-GB,en-US;q=0.8,en;q=0.6");
             request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
             request.ProtocolVersion = HttpVersion.Version11;
             request.KeepAlive = true;
             HttpRequestCachePolicy noCachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
             request.CachePolicy = noCachePolicy;
-            request.Host = "raw.githubusercontent.com";
             WebResponse response = request.GetResponse();
             Stream dataStream = response.GetResponseStream();
             StreamReader reader = new StreamReader(dataStream);
@@ -327,7 +326,14 @@ namespace ProjektSTI
         public List<RootObject> VratSoubory()
         {
             string odpoved = UdelejRequestGitHub(AdresaServer + "/repos/" + Uzivatel + "/" + Repozitar + "/contents");
-            return JsonConvert.DeserializeObject<RootObject[]>(odpoved).ToList();
+            var ret = JsonConvert.DeserializeObject<RootObject[]>(odpoved).ToList();
+            var commity = UdelejRequestGitHub(AdresaServer + "/repos/" + Uzivatel + "/" + Repozitar + "/commits");
+            var comm = JsonConvert.DeserializeObject<Commit[]>(commity).ToList();
+            foreach (var r in ret)
+            {
+                r.commit = comm[0];
+            }
+            return ret;
         }
 
     }
@@ -443,6 +449,7 @@ namespace ProjektSTI
 
     public class Commit
     {
+        public string sha { get; set; }
         public Author author { get; set; }
         public Committer committer { get; set; }
         public string message { get; set; }
@@ -552,7 +559,9 @@ namespace ProjektSTI
             Decimal pocet = 0;
             foreach (var js in soubory)
             {
-                pocet += dm.SpocitejVyskytRetezceSouboruUrl(js.download_url, znak);
+                var url = "https://cdn.rawgit.com/" + dm.Uzivatel + "/" + dm.Repozitar + "/" + js.commit.sha + "/" + js.path;
+                //var url = "https://rawgit.com/" + dm.Uzivatel + "/" + dm.Repozitar + "/master/" + js.path;
+                pocet += dm.SpocitejVyskytRetezceSouboruUrl(url, znak);
             }
             return pocet;
         }
@@ -679,7 +688,7 @@ namespace ProjektSTI
             foreach (var z in zaznamyHodina)
             {
                 var detail = dm.VratDetailCommitu(z.sha);
-                foreach(var det in detail.files)
+                foreach (var det in detail.files)
                 {
                     det.datum_commitu = z.commit.committer.date.ToLocalTime();
                 }
@@ -779,7 +788,8 @@ namespace ProjektSTI
                     package.Workbook.Properties.SetCustomPropertyValue("AssemblyName", "program a EPPlus");
 
                     package.SaveAs(new FileInfo(cesta));
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex);
                     return false;
