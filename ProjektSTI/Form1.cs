@@ -37,7 +37,7 @@ namespace ProjektSTI
         static Boolean pracuji = false;
 
         // čas poslední kontroly - pro správné opětovné hledání commitů
-        static DateTime posledniKontrola = DateTime.Now.AddYears(-5);
+        static DateTime posledniKontrola = new DateTime(2007, 10, 1, 0, 0, 0); // 01.10.2007 00:00:00 - První commit na GitHubu
 
         // počet nových commitů během jednoho cyklu hledání - pouze pro vypsání do logu
         static int pocetNovychCommitu = 0;
@@ -75,8 +75,8 @@ namespace ProjektSTI
                 }
                 if (cas.VratAktualniCasMs() == 0)
                 {
-                    DateTime datum = DateTime.Now.AddMilliseconds(posledniKontrola.Subtract(DateTime.Now).TotalMilliseconds);
-                    //DateTime datum = DateTime.Now.AddDays(-4); // PRO TESTOVANI
+                    DateTime datum = posledniKontrola;
+                    //DateTime datum = DateTime.Now.AddDays(-8); // PRO TESTOVANI
                     ZpracujAVypis(datum, Program.MainForm.NoveCommityTreeView);
                     }
             }
@@ -99,13 +99,14 @@ namespace ProjektSTI
         private static async void ZpracujAVypis(DateTime datum, System.Windows.Forms.TreeView tv)
         {
             pracuji = true;
+            posledniKontrola = DateTime.Now;
             NastavTlacitkaAKontrolku();
             Sluzba s = new Sluzba();
 
             Program.MainForm.LogBox.AppendText("-------- " + DateTime.Now.ToString() + " --------" + "\n");
             Program.MainForm.LogBox.AppendText("Zpracovavam commity..." + "\n");
             var commity = await s.VratSouboryCommituPoCaseAsync(datum);
-            posledniKontrola = DateTime.Now;
+            Console.WriteLine("Vrat commity od: " + datum.ToString());
             if (commity.Count > 0)
             {
                 VypisSeznamSouboru(tv, commity);
@@ -116,7 +117,7 @@ namespace ProjektSTI
             Program.MainForm.LogBox.AppendText("Pocet radku jazyku Java: " + jazyky.ToString() + "\n\n");
 
             pocetNovychCommitu = 0;
-            pocetVsechNovychCommitu = (tv == Program.MainForm.VsechnyCommityTreeView) ? -1 : pocetVsechNovychCommitu;
+            pocetVsechNovychCommitu = (tv == Program.MainForm.VsechnyCommityTreeView) ? -1 : pocetVsechNovychCommitu; // Při novém spuštění vynuluj
             pracuji = false;
         }
 
@@ -126,19 +127,19 @@ namespace ProjektSTI
             {
                 Program.MainForm.RefreshButton.Enabled =true;
                 Program.MainForm.ClearLogBoxButton.Enabled = true;
-                Program.MainForm.pictureBox1.BackColor = Color.Green;
+                Program.MainForm.Kontrolka.BackColor = Color.Green;
             }
             else if (pracuji && ZkouskaInternetovehoPripojeni())
             {
                 Program.MainForm.RefreshButton.Enabled = false;
                 Program.MainForm.ClearLogBoxButton.Enabled = false;
-                Program.MainForm.pictureBox1.BackColor = Color.Green;
+                Program.MainForm.Kontrolka.BackColor = Color.Green;
             }
             else
             {
                 Program.MainForm.RefreshButton.Enabled = false;
                 Program.MainForm.ClearLogBoxButton.Enabled = false;
-                Program.MainForm.pictureBox1.BackColor = Color.Red;
+                Program.MainForm.Kontrolka.BackColor = Color.Red;
             }
         }
 
@@ -157,7 +158,7 @@ namespace ProjektSTI
                     pocetVsechCommitu++;
                     pocetVsechNovychCommitu++;
                     pocetNovychCommitu++;
-                    i = (tv == Program.MainForm.NoveCommityTreeView) ? pocetVsechNovychCommitu : 0;
+                    i = (tv == Program.MainForm.NoveCommityTreeView) ? pocetVsechNovychCommitu : 0; // Při novém spuštění přidávej commity vždy na vrchol stromu - řazení od nejnovějšího po nejstarší
                     dateList.Add(date);
                     tv.Nodes.Insert(i, "[" + pocetVsechCommitu + "] " + soubor.datum_commitu.ToString());
                     tv.Nodes[i].Nodes.Add(soubor.filename.ToString());

@@ -32,13 +32,13 @@
             this.LogBox = new System.Windows.Forms.RichTextBox();
             this.TimeShower = new System.Windows.Forms.Label();
             this.ClearLogBoxButton = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.Kontrolka = new System.Windows.Forms.PictureBox();
             this.GrafButton = new System.Windows.Forms.Button();
             this.VsechnyCommityTreeView = new System.Windows.Forms.TreeView();
             this.OtevriZavriVseButton = new System.Windows.Forms.Button();
             this.NoveCommityTreeView = new System.Windows.Forms.TreeView();
             this.PresunoutButton = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Kontrolka)).BeginInit();
             this.SuspendLayout();
             // 
             // RefreshButton
@@ -82,14 +82,14 @@
             this.ClearLogBoxButton.UseVisualStyleBackColor = true;
             this.ClearLogBoxButton.Click += new System.EventHandler(this.ClearLogBoxButton_Click);
             // 
-            // pictureBox1
+            // Kontrolka
             // 
-            this.pictureBox1.BackColor = System.Drawing.Color.Red;
-            this.pictureBox1.Location = new System.Drawing.Point(648, 12);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(25, 26);
-            this.pictureBox1.TabIndex = 7;
-            this.pictureBox1.TabStop = false;
+            this.Kontrolka.BackColor = System.Drawing.Color.Red;
+            this.Kontrolka.Location = new System.Drawing.Point(648, 12);
+            this.Kontrolka.Name = "Kontrolka";
+            this.Kontrolka.Size = new System.Drawing.Size(25, 26);
+            this.Kontrolka.TabIndex = 7;
+            this.Kontrolka.TabStop = false;
             // 
             // GrafButton
             // 
@@ -153,14 +153,14 @@
             this.Controls.Add(this.OtevriZavriVseButton);
             this.Controls.Add(this.VsechnyCommityTreeView);
             this.Controls.Add(this.GrafButton);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.Kontrolka);
             this.Controls.Add(this.ClearLogBoxButton);
             this.Controls.Add(this.TimeShower);
             this.Controls.Add(this.LogBox);
             this.Controls.Add(this.RefreshButton);
             this.Name = "MainForm";
             this.Text = "Projekt STI";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Kontrolka)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -172,7 +172,7 @@
         private System.Windows.Forms.RichTextBox LogBox;
         private System.Windows.Forms.Label TimeShower;
         private System.Windows.Forms.Button ClearLogBoxButton;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox Kontrolka;
         private System.Windows.Forms.Button GrafButton;
         private System.Windows.Forms.TreeView VsechnyCommityTreeView;
         private System.Windows.Forms.Button OtevriZavriVseButton;
