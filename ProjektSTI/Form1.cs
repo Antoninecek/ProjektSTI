@@ -21,20 +21,17 @@ namespace ProjektSTI
     {
         static System.Windows.Forms.Timer casovac = new System.Windows.Forms.Timer();
         static int interval = 3600000 - 1000; // -1 sekunda kvůli správné časové synchronizaci
-        //static int interval = 30000 - 1000; // PRO TESTOVANI
+        //static int interval = 60000 - 1000; // PRO TESTOVANI
         static Cas cas = new Cas(interval);
         static Stopwatch sw = new Stopwatch();
 
         // vytvořeno speciálně pro nové spuštění aplikace, po prvním vrácení commitů se nastaví na false
         static Boolean noveSpusteni = true;
 
-        // uchování hodnoty pro otevřený/zavřený strom souborů v GUI
-        static Boolean openTree = false;
-
-        // počet všech commitů - pro správné indexování
+        // počet všech commitů
  //       static int pocetVsechCommitu = 0;
 
-        // hodnota, která oznamuje, zda je v průběhu vrácení commitů - pro správné nastavení tlačítek a zobrazení GUI
+        // hodnota, která oznamuje, zda je v průběhu nějaká činnost aplikace - pro správné nastavení tlačítek a zobrazení GUI
         static Boolean pracuji = false;
 
         // čas poslední kontroly - pro správné opětovné hledání commitů
@@ -60,20 +57,36 @@ namespace ProjektSTI
         {
             if (ZkouskaInternetovehoPripojeni())
             {
-                cas.OdectiSekunduAktualnihoCasu();
-                Program.MainForm.TimeShower.Text = "Další kontrola za: " + cas.VratAktualniCasFormat();
+                if (!pracuji)
+                {
+                    cas.OdectiSekunduAktualnihoCasu();
+                    Program.MainForm.TimeShower.Text = "Další kontrola za: " + cas.VratAktualniCasFormat();
 
-                if (noveSpusteni == true)
-                {
-                    noveSpusteni = false;
-                    ZpracujAVypis(posledniKontrola);
+                    if (noveSpusteni == true)
+                    {
+                        noveSpusteni = false;
+                        ZpracujAVypis(posledniKontrola);
+                    }
+                    if (cas.VratAktualniCasMs() == 0)
+                    {
+                        //DateTime datum = posledniKontrola;
+                        DateTime datum = DateTime.Now.AddYears(-8); // PRO TESTOVANI
+                        ZpracujAVypis(datum);
+                    }
                 }
-                if (cas.VratAktualniCasMs() == 0)
+                else
                 {
-                    DateTime datum = posledniKontrola;
-                    //DateTime datum = DateTime.Now.AddDays(-8); // PRO TESTOVANI
-                    ZpracujAVypis(datum);
+                    if (cas.VratAktualniCasMs() != 1000)
+                    {
+                        cas.OdectiSekunduAktualnihoCasu();
+                        Program.MainForm.TimeShower.Text = "Další kontrola za: " + cas.VratAktualniCasFormat();
+                    }
+                    else
+                    {
+                        Program.MainForm.TimeShower.Text = "Další kontrola po dokončení probíhající práce";
+                    }
                 }
+                
             }
             else
             {
@@ -93,23 +106,27 @@ namespace ProjektSTI
 
         private static async void ZpracujAVypis(DateTime datum)
         {
+            while (pracuji)
+            {
+                await Task.Delay(100);
+            }
             pracuji = true;
             posledniKontrola = DateTime.Now;
             NastavTlacitkaAKontrolku();
             Sluzba s = new Sluzba();
 
-            Program.MainForm.LogBox.AppendText("-------- " + DateTime.Now.ToString() + " --------" + "\n");
-            Program.MainForm.LogBox.AppendText("Zpracovavam commity..." + "\n");
+            LogniCas();
+            Program.MainForm.LogBox.AppendText("Zpracovávám commity..." + "\n");
             var commity = await s.VratSouboryCommituPoCaseAsync(datum);
             Console.WriteLine("Vrat commity od: " + datum.ToString());
             if (commity.Count > 0)
             {
                 VypisCommityDoTabulky(commity);
             }
-            Program.MainForm.LogBox.AppendText("Pocet commitu: " + pocetNovychCommitu + "\n");
+            Program.MainForm.LogBox.AppendText("Počet nových commitů: " + pocetNovychCommitu + "\n");
 
             var jazyky = await s.SpocitejPocetRadkuVSouborechUrcitehoTypuAsync("java");
-            Program.MainForm.LogBox.AppendText("Pocet radku jazyku Java: " + jazyky.ToString() + "\n\n");
+            Program.MainForm.LogBox.AppendText("Počet řádků jazyku Java: " + jazyky.ToString() + "\n\n");
             pocetNovychCommitu = 0;
 
             pracuji = false;
@@ -119,21 +136,57 @@ namespace ProjektSTI
         {
             if (!pracuji && ZkouskaInternetovehoPripojeni())
             {
-                Program.MainForm.RefreshButton.Enabled =true;
+                Program.MainForm.RefreshButton.Enabled = true;
                 Program.MainForm.ClearLogBoxButton.Enabled = true;
                 Program.MainForm.Kontrolka.BackColor = Color.Green;
+                if (Program.MainForm.TabulkaCommitu.Rows.Count != 0)
+                {
+                    if (Program.MainForm.TabulkaCommitu.SelectedRows.Count != 0)
+                    {
+                        if (Program.MainForm.TabulkaCommitu.SelectedRows[0].Cells[0].Value.ToString().EndsWith(".java"))
+                        {
+                            Program.MainForm.GrafButton.Enabled = true;
+                        }
+                        else
+                        {
+                            Program.MainForm.GrafButton.Enabled = false;
+                        }
+                        Program.MainForm.UlozitButton.Enabled = true;
+                    }
+                    else
+                    {
+                        Program.MainForm.GrafButton.Enabled = false;
+                        Program.MainForm.UlozitButton.Enabled = false;
+                    }
+                    Program.MainForm.ExportButton.Enabled = true;
+                }
+                else
+                {
+                    Program.MainForm.GrafButton.Enabled = false;
+                    Program.MainForm.UlozitButton.Enabled = false;
+                    Program.MainForm.ExportButton.Enabled = false;
+                }
+                
             }
             else if (pracuji && ZkouskaInternetovehoPripojeni())
             {
                 Program.MainForm.RefreshButton.Enabled = false;
                 Program.MainForm.ClearLogBoxButton.Enabled = false;
                 Program.MainForm.Kontrolka.BackColor = Color.Green;
+                Program.MainForm.UlozitButton.Enabled = false;
+                Program.MainForm.GrafButton.Enabled = false;
+                Program.MainForm.UlozitButton.Enabled = false;
+                Program.MainForm.ExportButton.Enabled = false;
             }
             else
             {
                 Program.MainForm.RefreshButton.Enabled = false;
                 Program.MainForm.ClearLogBoxButton.Enabled = false;
                 Program.MainForm.Kontrolka.BackColor = Color.Red;
+                Program.MainForm.UlozitButton.Enabled = false;
+                Program.MainForm.GrafButton.Enabled = false;
+                Program.MainForm.UlozitButton.Enabled = false;
+                Program.MainForm.ExportButton.Enabled = false;
             }
         }
 
@@ -147,25 +200,6 @@ namespace ProjektSTI
                 Program.MainForm.TabulkaCommitu.Rows.Insert(0, soubor.filename, soubor.datum_commitu.ToString(), soubor.sha.ToString());
             }
             
-        }
-
-
-        private static bool ZkouskaInternetovehoPripojeni()
-        {
-            try
-            {
-                using (var client = new System.Net.WebClient())
-                {
-                    using (client.OpenRead("http://clients3.google.com/generate_204"))
-                    {
-                        return true;
-                    }
-                }
-            }
-            catch
-            {
-                return false;
-            }
         }
 
         private void RefreshButton_Click(object sender, EventArgs e)
@@ -201,109 +235,140 @@ namespace ProjektSTI
 
         private async void ExportButton_Click(object sender, EventArgs e)
         {
+            while (pracuji)
+            {
+                await Task.Delay(100);
+            }
+            pracuji = true;
+
             Sluzba s = new Sluzba();
             List<Tuple<string, DateTime>> list = new List<Tuple<string, DateTime>>();
-
-            foreach (DataGridViewRow row in TabulkaCommitu.Rows)
-            {
-                list.Add(new Tuple<string, DateTime>(row.Cells[0].Value.ToString(), DateTime.Parse(row.Cells[1].Value.ToString())));
-            }
             
-            string cesta = VyberMistoUlozeni();
+            string cesta = VyberMistoUlozeni("export.xlsx");
 
-            if (!cesta.Equals("Fail"))
+             if (cesta != null)
             {
+                foreach (DataGridViewRow row in TabulkaCommitu.Rows)
+                {
+                    list.Add(new Tuple<string, DateTime>(row.Cells[0].Value.ToString(), DateTime.Parse(row.Cells[1].Value.ToString())));
+                }
+                LogniCas();
+                Program.MainForm.LogBox.AppendText("Exportuji... \n");
                 var excel = await s.VytvorExcelSeznamCommituAsync(list, cesta);
+
                 if (excel)
                 {
+                    Program.MainForm.LogBox.AppendText("Soubor exportován do: " + cesta + "\n");
                     Program.MainForm.TabulkaCommitu.ClearSelection();
                     Program.MainForm.TabulkaCommitu.Rows.Clear();
                     Program.MainForm.TabulkaCommitu.Refresh();
-                    Console.WriteLine("excel vytvoren");
+                    Console.WriteLine("excel vytvoren v: " + cesta);
                 }
                 else
                 {
+                    Program.MainForm.LogBox.AppendText("Soubor se nepodařilo exportovat \n");
                     Console.WriteLine("excel nevytvoren");
                 }
+                Program.MainForm.LogBox.AppendText("\n");
+                
             }
             else
             {
                 Console.WriteLine("cesta nevybrana");
             }
-        }
-
-
-        private void TabulkaCommitu_SelectionChanged(object sender, EventArgs e)
-        {
-           
-            if (Program.MainForm.TabulkaCommitu.SelectedRows.Count != 0)
-            {
-                if (Program.MainForm.TabulkaCommitu.SelectedRows[0].Cells[0].Value.ToString().EndsWith(".java"))
-                {
-                    Program.MainForm.GrafButton.Enabled = true;
-                }
-                else
-                {
-                    Program.MainForm.GrafButton.Enabled = false;
-                }
-                Program.MainForm.UlozitButton.Enabled = true;
-            }
-            else
-            {
-                Program.MainForm.GrafButton.Enabled = false;
-                Program.MainForm.UlozitButton.Enabled = false;
-            }
-
-        }
-
-        private void dataGridView1_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
-        {
-            Program.MainForm.ExportButton.Enabled = true;
-        }
-
-        private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
-        {
-            Program.MainForm.ExportButton.Enabled = false;
+            pracuji = false;
         }
 
         private async void UlozitButon_Click(object sender, EventArgs e)
         {
-            Sluzba s = new Sluzba();
-            String cesta = VyberMistoUlozeni();
-            String nazev = Program.MainForm.TabulkaCommitu.SelectedRows[0].Cells[0].Value.ToString();
-            String sha = Program.MainForm.TabulkaCommitu.SelectedRows[0].Cells[2].Value.ToString();
-
-            if (!cesta.Equals("Fail"))
+            while (pracuji)
             {
+                await Task.Delay(100);
+            }
+            pracuji = true;
+
+            Sluzba s = new Sluzba();
+            String nazev = Program.MainForm.TabulkaCommitu.SelectedRows[0].Cells[0].Value.ToString();
+            String cesta = VyberMistoUlozeni(nazev);
+            String sha = Program.MainForm.TabulkaCommitu.SelectedRows[0].Cells[2].Value.ToString();
+            
+            if (cesta != null)
+            {
+                LogniCas();
+                Program.MainForm.LogBox.AppendText("Ukládám soubor...\n");
                 var uloz = await s.StahniSouborZGituAsync(cesta, nazev, sha);
 
                 if (uloz)
                 {
-                    Console.WriteLine("ulozeno");
+                    Program.MainForm.LogBox.AppendText("Soubor uložen do: " + cesta + "\n");
+                    Console.WriteLine("ulozeno do: " + cesta);
                 }
                 else
                 {
-                    Console.WriteLine("neulozeno");
+                    Program.MainForm.LogBox.AppendText("Soubor se nepodařilo uložit \n");
+                    Console.WriteLine("neulozeno: " + cesta + " " + nazev + " " + sha);
                 }
+                Program.MainForm.LogBox.AppendText("\n");
             }
             else
             {
                 Console.WriteLine("cesta nevybrana");
             }
+            pracuji = false;
 
         }
-
-        private string VyberMistoUlozeni()
+        private void TabulkaCommitu_SelectionChanged(object sender, EventArgs e)
         {
-            using (var fbd = new FolderBrowserDialog())
-            {
-                DialogResult result = fbd.ShowDialog();
+            NastavTlacitkaAKontrolku();
+        }
 
-                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+        private void dataGridView1_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+        {
+            NastavTlacitkaAKontrolku();
+        }
+
+        private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            NastavTlacitkaAKontrolku();
+        }
+
+        private static void LogniCas()
+        {
+            Program.MainForm.LogBox.AppendText("-------- " + DateTime.Now.ToString() + " --------" + "\n");
+        }
+
+        private string VyberMistoUlozeni(string nazev)
+        {
+            SaveFileDialog savefile = new SaveFileDialog();
+            string format = Path.GetExtension(nazev);
+            savefile.FileName = nazev;
+            savefile.Filter = format.Substring(1,format.Length-1).ToUpper() + " soubory (*"+ format + ")|*" + format + "|Všechny soubory (*.*)|*.*";
+
+            if (savefile.ShowDialog() == DialogResult.OK)
+            {
+                return savefile.FileName;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private static bool ZkouskaInternetovehoPripojeni()
+        {
+            try
+            {
+                using (var client = new System.Net.WebClient())
                 {
-                    return fbd.SelectedPath;
+                    using (client.OpenRead("http://clients3.google.com/generate_204"))
+                    {
+                        return true;
+                    }
                 }
-                return "Fail";
+            }
+            catch
+            {
+                return false;
             }
         }
     }
