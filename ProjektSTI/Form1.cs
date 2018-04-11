@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Web;
+using System.IO;
 
 namespace ProjektSTI
 {
@@ -31,7 +32,7 @@ namespace ProjektSTI
         static Boolean openTree = false;
 
         // počet všech commitů - pro správné indexování
-        static int pocetVsechCommitu = 0;
+ //       static int pocetVsechCommitu = 0;
 
         // hodnota, která oznamuje, zda je v průběhu vrácení commitů - pro správné nastavení tlačítek a zobrazení GUI
         static Boolean pracuji = false;
@@ -41,10 +42,6 @@ namespace ProjektSTI
 
         // počet nových commitů během jednoho cyklu hledání - pouze pro vypsání do logu
         static int pocetNovychCommitu = 0;
-
-        // pocet všech nových commitu behem cele doby
-        static int pocetVsechNovychCommitu = -1;
-
 
         public MainForm()
         {
@@ -69,16 +66,14 @@ namespace ProjektSTI
                 if (noveSpusteni == true)
                 {
                     noveSpusteni = false;
-
-                    ZpracujAVypis(posledniKontrola, Program.MainForm.VsechnyCommityTreeView);
-                    Program.MainForm.OtevriZavriVseButton.Enabled = true;
+                    ZpracujAVypis(posledniKontrola);
                 }
                 if (cas.VratAktualniCasMs() == 0)
                 {
                     DateTime datum = posledniKontrola;
                     //DateTime datum = DateTime.Now.AddDays(-8); // PRO TESTOVANI
-                    ZpracujAVypis(datum, Program.MainForm.NoveCommityTreeView);
-                    }
+                    ZpracujAVypis(datum);
+                }
             }
             else
             {
@@ -96,7 +91,7 @@ namespace ProjektSTI
 
         }
 
-        private static async void ZpracujAVypis(DateTime datum, System.Windows.Forms.TreeView tv)
+        private static async void ZpracujAVypis(DateTime datum)
         {
             pracuji = true;
             posledniKontrola = DateTime.Now;
@@ -109,15 +104,14 @@ namespace ProjektSTI
             Console.WriteLine("Vrat commity od: " + datum.ToString());
             if (commity.Count > 0)
             {
-                VypisSeznamSouboru(tv, commity);
+                VypisCommityDoTabulky(commity);
             }
             Program.MainForm.LogBox.AppendText("Pocet commitu: " + pocetNovychCommitu + "\n");
 
             var jazyky = await s.SpocitejPocetRadkuVSouborechUrcitehoTypuAsync("java");
             Program.MainForm.LogBox.AppendText("Pocet radku jazyku Java: " + jazyky.ToString() + "\n\n");
-
             pocetNovychCommitu = 0;
-            pocetVsechNovychCommitu = (tv == Program.MainForm.VsechnyCommityTreeView) ? -1 : pocetVsechNovychCommitu; // Při novém spuštění vynuluj
+
             pracuji = false;
         }
 
@@ -143,33 +137,18 @@ namespace ProjektSTI
             }
         }
 
-        private static void VypisSeznamSouboru(System.Windows.Forms.TreeView tv, List<File> soubory)
+        private static void VypisCommityDoTabulky(List<File> soubory)
         {
             soubory.Reverse();
-            int i = 0;
-            ArrayList dateList = new ArrayList();
-
+            
             foreach (File soubor in soubory)
             {
-                DateTime date = soubor.datum_commitu;
-
-                if (!dateList.Contains(date))
-                {
-                    pocetVsechCommitu++;
-                    pocetVsechNovychCommitu++;
-                    pocetNovychCommitu++;
-                    i = (tv == Program.MainForm.NoveCommityTreeView) ? pocetVsechNovychCommitu : 0; // Při novém spuštění přidávej commity vždy na vrchol stromu - řazení od nejnovějšího po nejstarší
-                    dateList.Add(date);
-                    tv.Nodes.Insert(i, "[" + pocetVsechCommitu + "] " + soubor.datum_commitu.ToString());
-                    tv.Nodes[i].Nodes.Add(soubor.filename.ToString());
-                }
-                else
-                {
-                    tv.Nodes[i].Nodes.Add(soubor.filename.ToString());
-                }
+                pocetNovychCommitu++;
+                Program.MainForm.TabulkaCommitu.Rows.Insert(0, soubor.filename, soubor.datum_commitu.ToString(), soubor.sha.ToString());
             }
             
         }
+
 
         private static bool ZkouskaInternetovehoPripojeni()
         {
@@ -204,14 +183,15 @@ namespace ProjektSTI
 
         private async void GrafButton_Click(object sender, EventArgs e)
         {
-            String selected_file = Program.MainForm.VsechnyCommityTreeView.SelectedNode.Text;
-
+            
+            String selected_file = Program.MainForm.TabulkaCommitu.SelectedCells[0].Value.ToString();
+            
             Form2 GraphForm = new Form2(selected_file);
             GraphForm.Text = "Graf " + selected_file;
             GraphForm.Show();
             Sluzba sluzba = new Sluzba();
             var stat = await sluzba.VratStatistikuZmenyRadkuSouboruAsync(selected_file);
-            GraphForm.chart1.Series["Počet přidaných řádků"].Points.Clear();
+            //GraphForm.chart1.Series["Počet přidaných řádků"].Points.Clear();
             stat.Reverse();
             foreach (var commit in stat)
             {
@@ -219,68 +199,112 @@ namespace ProjektSTI
             };
         }
 
-        private void OtevriZavriVseButton_Click(object sender, EventArgs e)
+        private async void ExportButton_Click(object sender, EventArgs e)
         {
-            if (openTree)
-            {
-                Program.MainForm.VsechnyCommityTreeView.CollapseAll();
-                openTree = false;
-            } else
-            {
-                Program.MainForm.VsechnyCommityTreeView.ExpandAll();
-                openTree = true;
-            }
+            Sluzba s = new Sluzba();
+            List<Tuple<string, DateTime>> list = new List<Tuple<string, DateTime>>();
 
+            foreach (DataGridViewRow row in TabulkaCommitu.Rows)
+            {
+                list.Add(new Tuple<string, DateTime>(row.Cells[0].Value.ToString(), DateTime.Parse(row.Cells[1].Value.ToString())));
+            }
             
+            string cesta = VyberMistoUlozeni();
+
+            if (!cesta.Equals("Fail"))
+            {
+                var excel = await s.VytvorExcelSeznamCommituAsync(list, cesta);
+                if (excel)
+                {
+                    Program.MainForm.TabulkaCommitu.ClearSelection();
+                    Program.MainForm.TabulkaCommitu.Rows.Clear();
+                    Program.MainForm.TabulkaCommitu.Refresh();
+                    Console.WriteLine("excel vytvoren");
+                }
+                else
+                {
+                    Console.WriteLine("excel nevytvoren");
+                }
+            }
+            else
+            {
+                Console.WriteLine("cesta nevybrana");
+            }
         }
 
-        private void VsechnyCommityTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+
+        private void TabulkaCommitu_SelectionChanged(object sender, EventArgs e)
         {
-            if (Program.MainForm.VsechnyCommityTreeView.SelectedNode.Text.EndsWith(".java"))
+           
+            if (Program.MainForm.TabulkaCommitu.SelectedRows.Count != 0)
             {
-                Program.MainForm.GrafButton.Enabled = true;
-            } else
+                if (Program.MainForm.TabulkaCommitu.SelectedRows[0].Cells[0].Value.ToString().EndsWith(".java"))
+                {
+                    Program.MainForm.GrafButton.Enabled = true;
+                }
+                else
+                {
+                    Program.MainForm.GrafButton.Enabled = false;
+                }
+                Program.MainForm.UlozitButton.Enabled = true;
+            }
+            else
             {
                 Program.MainForm.GrafButton.Enabled = false;
+                Program.MainForm.UlozitButton.Enabled = false;
             }
-            
+
         }
 
-        private void NoveCommityTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        private void dataGridView1_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {
-            if (Program.MainForm.NoveCommityTreeView.SelectedNode.Parent == null)
-            {
-                Program.MainForm.PresunoutButton.Enabled = true;
-            } else
-            {
-                Program.MainForm.PresunoutButton.Enabled = false;
-            }
+            Program.MainForm.ExportButton.Enabled = true;
         }
 
-        private void PresunoutButton_Click(object sender, EventArgs e)
+        private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
         {
-            var selectedNode = Program.MainForm.NoveCommityTreeView.SelectedNode;
-            Program.MainForm.NoveCommityTreeView.SelectedNode.Remove();
-            Program.MainForm.VsechnyCommityTreeView.Nodes.Insert(0, selectedNode);
-            pocetVsechNovychCommitu--;
-            if (Program.MainForm.NoveCommityTreeView.Nodes.Count == 0)
-            {
-                Program.MainForm.PresunoutButton.Enabled = false;
-            }
-
-            
+            Program.MainForm.ExportButton.Enabled = false;
         }
 
-        private void AllFilesTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        private async void UlozitButon_Click(object sender, EventArgs e)
         {
-            if (Program.MainForm.VsechnyCommityTreeView.SelectedNode.Text.EndsWith(".java"))
+            Sluzba s = new Sluzba();
+            String cesta = VyberMistoUlozeni();
+            String nazev = Program.MainForm.TabulkaCommitu.SelectedRows[0].Cells[0].Value.ToString();
+            String sha = Program.MainForm.TabulkaCommitu.SelectedRows[0].Cells[2].Value.ToString();
+
+            if (!cesta.Equals("Fail"))
             {
-                Program.MainForm.GrafButton.Enabled = true;
-            } else
-            {
-                Program.MainForm.GrafButton.Enabled = false;
+                var uloz = await s.StahniSouborZGituAsync(cesta, nazev, sha);
+
+                if (uloz)
+                {
+                    Console.WriteLine("ulozeno");
+                }
+                else
+                {
+                    Console.WriteLine("neulozeno");
+                }
             }
-            
+            else
+            {
+                Console.WriteLine("cesta nevybrana");
+            }
+
+        }
+
+        private string VyberMistoUlozeni()
+        {
+            using (var fbd = new FolderBrowserDialog())
+            {
+                DialogResult result = fbd.ShowDialog();
+
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                {
+                    return fbd.SelectedPath;
+                }
+                return "Fail";
+            }
         }
     }
 }

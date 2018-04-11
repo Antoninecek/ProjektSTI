@@ -34,11 +34,14 @@
             this.ClearLogBoxButton = new System.Windows.Forms.Button();
             this.Kontrolka = new System.Windows.Forms.PictureBox();
             this.GrafButton = new System.Windows.Forms.Button();
-            this.VsechnyCommityTreeView = new System.Windows.Forms.TreeView();
-            this.OtevriZavriVseButton = new System.Windows.Forms.Button();
-            this.NoveCommityTreeView = new System.Windows.Forms.TreeView();
-            this.PresunoutButton = new System.Windows.Forms.Button();
+            this.ExportButton = new System.Windows.Forms.Button();
+            this.TabulkaCommitu = new System.Windows.Forms.DataGridView();
+            this.nazev = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.datum = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.sha = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UlozitButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.Kontrolka)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TabulkaCommitu)).BeginInit();
             this.SuspendLayout();
             // 
             // RefreshButton
@@ -94,7 +97,7 @@
             // GrafButton
             // 
             this.GrafButton.Enabled = false;
-            this.GrafButton.Location = new System.Drawing.Point(305, 449);
+            this.GrafButton.Location = new System.Drawing.Point(283, 448);
             this.GrafButton.Name = "GrafButton";
             this.GrafButton.Size = new System.Drawing.Size(75, 23);
             this.GrafButton.TabIndex = 8;
@@ -102,56 +105,84 @@
             this.GrafButton.UseVisualStyleBackColor = true;
             this.GrafButton.Click += new System.EventHandler(this.GrafButton_Click);
             // 
-            // VsechnyCommityTreeView
+            // ExportButton
             // 
-            this.VsechnyCommityTreeView.Location = new System.Drawing.Point(224, 57);
-            this.VsechnyCommityTreeView.Name = "VsechnyCommityTreeView";
-            this.VsechnyCommityTreeView.PathSeparator = "/";
-            this.VsechnyCommityTreeView.Size = new System.Drawing.Size(222, 386);
-            this.VsechnyCommityTreeView.TabIndex = 9;
-            this.VsechnyCommityTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.VsechnyCommityTreeView_AfterSelect);
+            this.ExportButton.Enabled = false;
+            this.ExportButton.Location = new System.Drawing.Point(551, 448);
+            this.ExportButton.Name = "ExportButton";
+            this.ExportButton.Size = new System.Drawing.Size(75, 23);
+            this.ExportButton.TabIndex = 12;
+            this.ExportButton.Text = "Export";
+            this.ExportButton.UseVisualStyleBackColor = true;
+            this.ExportButton.Click += new System.EventHandler(this.ExportButton_Click);
             // 
-            // OtevriZavriVseButton
+            // TabulkaCommitu
             // 
-            this.OtevriZavriVseButton.Enabled = false;
-            this.OtevriZavriVseButton.Location = new System.Drawing.Point(281, 28);
-            this.OtevriZavriVseButton.Name = "OtevriZavriVseButton";
-            this.OtevriZavriVseButton.Size = new System.Drawing.Size(99, 23);
-            this.OtevriZavriVseButton.TabIndex = 10;
-            this.OtevriZavriVseButton.Text = "Otevři/Zavři vše";
-            this.OtevriZavriVseButton.UseVisualStyleBackColor = true;
-            this.OtevriZavriVseButton.Click += new System.EventHandler(this.OtevriZavriVseButton_Click);
+            this.TabulkaCommitu.AllowUserToAddRows = false;
+            this.TabulkaCommitu.AllowUserToDeleteRows = false;
+            this.TabulkaCommitu.AllowUserToResizeRows = false;
+            this.TabulkaCommitu.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.TabulkaCommitu.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.nazev,
+            this.datum,
+            this.sha});
+            this.TabulkaCommitu.Location = new System.Drawing.Point(224, 57);
+            this.TabulkaCommitu.MultiSelect = false;
+            this.TabulkaCommitu.Name = "TabulkaCommitu";
+            this.TabulkaCommitu.ReadOnly = true;
+            this.TabulkaCommitu.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.TabulkaCommitu.Size = new System.Drawing.Size(449, 386);
+            this.TabulkaCommitu.TabIndex = 13;
+            this.TabulkaCommitu.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView1_RowsAdded);
+            this.TabulkaCommitu.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView1_RowsRemoved);
+            this.TabulkaCommitu.SelectionChanged += new System.EventHandler(this.TabulkaCommitu_SelectionChanged);
             // 
-            // NoveCommityTreeView
+            // nazev
             // 
-            this.NoveCommityTreeView.Location = new System.Drawing.Point(452, 57);
-            this.NoveCommityTreeView.Name = "NoveCommityTreeView";
-            this.NoveCommityTreeView.PathSeparator = "/";
-            this.NoveCommityTreeView.Size = new System.Drawing.Size(222, 386);
-            this.NoveCommityTreeView.TabIndex = 11;
-            this.NoveCommityTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.NoveCommityTreeView_AfterSelect);
+            this.nazev.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.nazev.HeaderText = "Název souboru";
+            this.nazev.Name = "nazev";
+            this.nazev.ReadOnly = true;
+            this.nazev.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.nazev.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
-            // PresunoutButton
+            // datum
             // 
-            this.PresunoutButton.Enabled = false;
-            this.PresunoutButton.Location = new System.Drawing.Point(532, 449);
-            this.PresunoutButton.Name = "PresunoutButton";
-            this.PresunoutButton.Size = new System.Drawing.Size(75, 23);
-            this.PresunoutButton.TabIndex = 12;
-            this.PresunoutButton.Text = "Přesunout";
-            this.PresunoutButton.UseVisualStyleBackColor = true;
-            this.PresunoutButton.Click += new System.EventHandler(this.PresunoutButton_Click);
+            this.datum.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.datum.HeaderText = "Datum";
+            this.datum.Name = "datum";
+            this.datum.ReadOnly = true;
+            this.datum.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.datum.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // sha
+            // 
+            this.sha.HeaderText = "SHA";
+            this.sha.Name = "sha";
+            this.sha.ReadOnly = true;
+            this.sha.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.sha.Visible = false;
+            // 
+            // UlozitButton
+            // 
+            this.UlozitButton.Enabled = false;
+            this.UlozitButton.Location = new System.Drawing.Point(419, 448);
+            this.UlozitButton.Name = "UlozitButton";
+            this.UlozitButton.Size = new System.Drawing.Size(75, 23);
+            this.UlozitButton.TabIndex = 14;
+            this.UlozitButton.Text = "Uložit";
+            this.UlozitButton.UseVisualStyleBackColor = true;
+            this.UlozitButton.Click += new System.EventHandler(this.UlozitButon_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(687, 487);
-            this.Controls.Add(this.PresunoutButton);
-            this.Controls.Add(this.NoveCommityTreeView);
-            this.Controls.Add(this.OtevriZavriVseButton);
-            this.Controls.Add(this.VsechnyCommityTreeView);
+            this.ClientSize = new System.Drawing.Size(683, 483);
+            this.Controls.Add(this.UlozitButton);
+            this.Controls.Add(this.TabulkaCommitu);
+            this.Controls.Add(this.ExportButton);
             this.Controls.Add(this.GrafButton);
             this.Controls.Add(this.Kontrolka);
             this.Controls.Add(this.ClearLogBoxButton);
@@ -161,6 +192,7 @@
             this.Name = "MainForm";
             this.Text = "Projekt STI";
             ((System.ComponentModel.ISupportInitialize)(this.Kontrolka)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TabulkaCommitu)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -174,10 +206,12 @@
         private System.Windows.Forms.Button ClearLogBoxButton;
         private System.Windows.Forms.PictureBox Kontrolka;
         private System.Windows.Forms.Button GrafButton;
-        private System.Windows.Forms.TreeView VsechnyCommityTreeView;
-        private System.Windows.Forms.Button OtevriZavriVseButton;
-        private System.Windows.Forms.TreeView NoveCommityTreeView;
-        private System.Windows.Forms.Button PresunoutButton;
+        private System.Windows.Forms.Button ExportButton;
+        private System.Windows.Forms.DataGridView TabulkaCommitu;
+        private System.Windows.Forms.DataGridViewTextBoxColumn nazev;
+        private System.Windows.Forms.DataGridViewTextBoxColumn datum;
+        private System.Windows.Forms.DataGridViewTextBoxColumn sha;
+        private System.Windows.Forms.Button UlozitButton;
     }
 }
 
