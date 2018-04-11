@@ -30,7 +30,7 @@
         {
             this.RefreshButton = new System.Windows.Forms.Button();
             this.LogBox = new System.Windows.Forms.RichTextBox();
-            this.TimeShower = new System.Windows.Forms.Label();
+            this.UkazatelCasu = new System.Windows.Forms.Label();
             this.ClearLogBoxButton = new System.Windows.Forms.Button();
             this.Kontrolka = new System.Windows.Forms.PictureBox();
             this.GrafButton = new System.Windows.Forms.Button();
@@ -64,15 +64,15 @@
             this.LogBox.TabIndex = 3;
             this.LogBox.Text = "";
             // 
-            // TimeShower
+            // UkazatelCasu
             // 
-            this.TimeShower.AutoSize = true;
-            this.TimeShower.Location = new System.Drawing.Point(70, 25);
-            this.TimeShower.Name = "TimeShower";
-            this.TimeShower.Size = new System.Drawing.Size(148, 13);
-            this.TimeShower.TabIndex = 4;
-            this.TimeShower.Text = "Další kontrola za: 0h 00m 00s";
-            this.TimeShower.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.UkazatelCasu.AutoSize = true;
+            this.UkazatelCasu.Location = new System.Drawing.Point(70, 25);
+            this.UkazatelCasu.Name = "UkazatelCasu";
+            this.UkazatelCasu.Size = new System.Drawing.Size(148, 13);
+            this.UkazatelCasu.TabIndex = 4;
+            this.UkazatelCasu.Text = "Další kontrola za: 0h 00m 00s";
+            this.UkazatelCasu.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ClearLogBoxButton
             // 
@@ -186,7 +186,7 @@
             this.Controls.Add(this.GrafButton);
             this.Controls.Add(this.Kontrolka);
             this.Controls.Add(this.ClearLogBoxButton);
-            this.Controls.Add(this.TimeShower);
+            this.Controls.Add(this.UkazatelCasu);
             this.Controls.Add(this.LogBox);
             this.Controls.Add(this.RefreshButton);
             this.Name = "MainForm";
@@ -202,7 +202,7 @@
 
         private System.Windows.Forms.Button RefreshButton;
         private System.Windows.Forms.RichTextBox LogBox;
-        private System.Windows.Forms.Label TimeShower;
+        private System.Windows.Forms.Label UkazatelCasu;
         private System.Windows.Forms.Button ClearLogBoxButton;
         private System.Windows.Forms.PictureBox Kontrolka;
         private System.Windows.Forms.Button GrafButton;

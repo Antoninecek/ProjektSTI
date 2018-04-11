@@ -40,7 +40,7 @@ namespace ProjektSTI
         // počet nových commitů během jednoho cyklu hledání - pouze pro vypsání do logu
         static int pocetNovychCommitu = 0;
 
-        public MainForm()
+        public MainForm(string adresa, string uzivatel, string repozitar)
         {
             InitializeComponent();
             casovac.Tick += new EventHandler(ZpracovaniCasovace);
@@ -53,14 +53,15 @@ namespace ProjektSTI
             sw.Restart();
         }
 
-        private static void ZpracovaniCasovace(Object objekt, EventArgs eventargs)
+        private void ZpracovaniCasovace(Object objekt, EventArgs eventargs)
         {
             if (ZkouskaInternetovehoPripojeni())
             {
                 if (!pracuji)
                 {
                     cas.OdectiSekunduAktualnihoCasu();
-                    Program.MainForm.TimeShower.Text = "Další kontrola za: " + cas.VratAktualniCasFormat();
+                    
+                    UkazatelCasu.Text = "Další kontrola za: " + cas.VratAktualniCasFormat();
 
                     if (noveSpusteni == true)
                     {
@@ -69,8 +70,8 @@ namespace ProjektSTI
                     }
                     if (cas.VratAktualniCasMs() == 0)
                     {
-                        //DateTime datum = posledniKontrola;
-                        DateTime datum = DateTime.Now.AddYears(-8); // PRO TESTOVANI
+                        DateTime datum = posledniKontrola;
+                        //DateTime datum = DateTime.Now.AddYears(-8); // PRO TESTOVANI
                         ZpracujAVypis(datum);
                     }
                 }
@@ -79,11 +80,11 @@ namespace ProjektSTI
                     if (cas.VratAktualniCasMs() != 1000)
                     {
                         cas.OdectiSekunduAktualnihoCasu();
-                        Program.MainForm.TimeShower.Text = "Další kontrola za: " + cas.VratAktualniCasFormat();
+                        UkazatelCasu.Text = "Další kontrola za: " + cas.VratAktualniCasFormat();
                     }
                     else
                     {
-                        Program.MainForm.TimeShower.Text = "Další kontrola po dokončení probíhající práce";
+                        UkazatelCasu.Text = "Další kontrola po dokončení probíhající práce";
                     }
                 }
                 
@@ -93,18 +94,18 @@ namespace ProjektSTI
                 if (cas.VratAktualniCasMs() != 1000)
                 {
                     cas.OdectiSekunduAktualnihoCasu();
-                    Program.MainForm.TimeShower.Text = "Další kontrola za: " + cas.VratAktualniCasFormat();
+                    UkazatelCasu.Text = "Další kontrola za: " + cas.VratAktualniCasFormat();
                 }
                 else
                 {
-                    Program.MainForm.TimeShower.Text = "Další kontrola po připojení k internetu";
+                    UkazatelCasu.Text = "Další kontrola po připojení k internetu";
                 }
             }
             NastavTlacitkaAKontrolku();
 
         }
 
-        private static async void ZpracujAVypis(DateTime datum)
+        private async void ZpracujAVypis(DateTime datum)
         {
             while (pracuji)
             {
@@ -116,88 +117,88 @@ namespace ProjektSTI
             Sluzba s = new Sluzba();
 
             LogniCas();
-            Program.MainForm.LogBox.AppendText("Zpracovávám commity..." + "\n");
+            LogBox.AppendText("Zpracovávám commity..." + "\n");
             var commity = await s.VratSouboryCommituPoCaseAsync(datum);
             Console.WriteLine("Vrat commity od: " + datum.ToString());
             if (commity.Count > 0)
             {
                 VypisCommityDoTabulky(commity);
             }
-            Program.MainForm.LogBox.AppendText("Počet nových commitů: " + pocetNovychCommitu + "\n");
+            LogBox.AppendText("Počet nových commitů: " + pocetNovychCommitu + "\n");
 
             var jazyky = await s.SpocitejPocetRadkuVSouborechUrcitehoTypuAsync("java");
-            Program.MainForm.LogBox.AppendText("Počet řádků jazyku Java: " + jazyky.ToString() + "\n\n");
+            LogBox.AppendText("Počet řádků jazyku Java: " + jazyky.ToString() + "\n\n");
             pocetNovychCommitu = 0;
 
             pracuji = false;
         }
 
-        private static void NastavTlacitkaAKontrolku()
+        private void NastavTlacitkaAKontrolku()
         {
             if (!pracuji && ZkouskaInternetovehoPripojeni())
             {
-                Program.MainForm.RefreshButton.Enabled = true;
-                Program.MainForm.ClearLogBoxButton.Enabled = true;
-                Program.MainForm.Kontrolka.BackColor = Color.Green;
-                if (Program.MainForm.TabulkaCommitu.Rows.Count != 0)
+                RefreshButton.Enabled = true;
+                ClearLogBoxButton.Enabled = true;
+                Kontrolka.BackColor = Color.Green;
+                if (TabulkaCommitu.Rows.Count != 0)
                 {
-                    if (Program.MainForm.TabulkaCommitu.SelectedRows.Count != 0)
+                    if (TabulkaCommitu.SelectedRows.Count != 0)
                     {
-                        if (Program.MainForm.TabulkaCommitu.SelectedRows[0].Cells[0].Value.ToString().EndsWith(".java"))
+                        if (TabulkaCommitu.SelectedRows[0].Cells[0].Value.ToString().EndsWith(".java"))
                         {
-                            Program.MainForm.GrafButton.Enabled = true;
+                            GrafButton.Enabled = true;
                         }
                         else
                         {
-                            Program.MainForm.GrafButton.Enabled = false;
+                            GrafButton.Enabled = false;
                         }
-                        Program.MainForm.UlozitButton.Enabled = true;
+                        UlozitButton.Enabled = true;
                     }
                     else
                     {
-                        Program.MainForm.GrafButton.Enabled = false;
-                        Program.MainForm.UlozitButton.Enabled = false;
+                        GrafButton.Enabled = false;
+                        UlozitButton.Enabled = false;
                     }
-                    Program.MainForm.ExportButton.Enabled = true;
+                    ExportButton.Enabled = true;
                 }
                 else
                 {
-                    Program.MainForm.GrafButton.Enabled = false;
-                    Program.MainForm.UlozitButton.Enabled = false;
-                    Program.MainForm.ExportButton.Enabled = false;
+                    GrafButton.Enabled = false;
+                    UlozitButton.Enabled = false;
+                    ExportButton.Enabled = false;
                 }
                 
             }
             else if (pracuji && ZkouskaInternetovehoPripojeni())
             {
-                Program.MainForm.RefreshButton.Enabled = false;
-                Program.MainForm.ClearLogBoxButton.Enabled = false;
-                Program.MainForm.Kontrolka.BackColor = Color.Green;
-                Program.MainForm.UlozitButton.Enabled = false;
-                Program.MainForm.GrafButton.Enabled = false;
-                Program.MainForm.UlozitButton.Enabled = false;
-                Program.MainForm.ExportButton.Enabled = false;
+                RefreshButton.Enabled = false;
+                ClearLogBoxButton.Enabled = false;
+                Kontrolka.BackColor = Color.Green;
+                UlozitButton.Enabled = false;
+                GrafButton.Enabled = false;
+                UlozitButton.Enabled = false;
+                ExportButton.Enabled = false;
             }
             else
             {
-                Program.MainForm.RefreshButton.Enabled = false;
-                Program.MainForm.ClearLogBoxButton.Enabled = false;
-                Program.MainForm.Kontrolka.BackColor = Color.Red;
-                Program.MainForm.UlozitButton.Enabled = false;
-                Program.MainForm.GrafButton.Enabled = false;
-                Program.MainForm.UlozitButton.Enabled = false;
-                Program.MainForm.ExportButton.Enabled = false;
+                RefreshButton.Enabled = false;
+                ClearLogBoxButton.Enabled = false;
+                Kontrolka.BackColor = Color.Red;
+                UlozitButton.Enabled = false;
+                GrafButton.Enabled = false;
+                UlozitButton.Enabled = false;
+                ExportButton.Enabled = false;
             }
         }
 
-        private static void VypisCommityDoTabulky(List<File> soubory)
+        private void VypisCommityDoTabulky(List<File> soubory)
         {
             soubory.Reverse();
             
             foreach (File soubor in soubory)
             {
                 pocetNovychCommitu++;
-                Program.MainForm.TabulkaCommitu.Rows.Insert(0, soubor.filename, soubor.datum_commitu.ToString(), soubor.sha.ToString());
+                TabulkaCommitu.Rows.Insert(0, soubor.filename, soubor.datum_commitu.ToString(), soubor.sha.ToString());
             }
             
         }
@@ -212,24 +213,24 @@ namespace ProjektSTI
         }
         private void ClearLogBoxButton_Click(object sender, EventArgs e)
         {
-            Program.MainForm.LogBox.Clear();
+            LogBox.Clear();
         }
 
         private async void GrafButton_Click(object sender, EventArgs e)
         {
             
-            String selected_file = Program.MainForm.TabulkaCommitu.SelectedCells[0].Value.ToString();
+            String selected_file = TabulkaCommitu.SelectedCells[0].Value.ToString();
             
-            Form2 GraphForm = new Form2(selected_file);
-            GraphForm.Text = "Graf " + selected_file;
-            GraphForm.Show();
+            GrafForm GrafForm = new GrafForm(selected_file);
+            GrafForm.Text = "Graf " + selected_file;
+            GrafForm.Show();
             Sluzba sluzba = new Sluzba();
             var stat = await sluzba.VratStatistikuZmenyRadkuSouboruAsync(selected_file);
             //GraphForm.chart1.Series["Počet přidaných řádků"].Points.Clear();
             stat.Reverse();
             foreach (var commit in stat)
             {
-                GraphForm.chart1.Series["Počet přidaných řádků"].Points.AddY(commit.pridane_radky - commit.odebrane_radky);
+                GrafForm.chart1.Series["Počet přidaných řádků"].Points.AddY(commit.pridane_radky - commit.odebrane_radky);
             };
         }
 
@@ -253,23 +254,23 @@ namespace ProjektSTI
                     list.Add(new Tuple<string, DateTime>(row.Cells[0].Value.ToString(), DateTime.Parse(row.Cells[1].Value.ToString())));
                 }
                 LogniCas();
-                Program.MainForm.LogBox.AppendText("Exportuji... \n");
+                LogBox.AppendText("Exportuji... \n");
                 var excel = await s.VytvorExcelSeznamCommituAsync(list, cesta);
 
                 if (excel)
                 {
-                    Program.MainForm.LogBox.AppendText("Soubor exportován do: " + cesta + "\n");
-                    Program.MainForm.TabulkaCommitu.ClearSelection();
-                    Program.MainForm.TabulkaCommitu.Rows.Clear();
-                    Program.MainForm.TabulkaCommitu.Refresh();
+                    LogBox.AppendText("Soubor exportován do: " + cesta + "\n");
+                    TabulkaCommitu.ClearSelection();
+                    TabulkaCommitu.Rows.Clear();
+                    TabulkaCommitu.Refresh();
                     Console.WriteLine("excel vytvoren v: " + cesta);
                 }
                 else
                 {
-                    Program.MainForm.LogBox.AppendText("Soubor se nepodařilo exportovat \n");
+                    LogBox.AppendText("Soubor se nepodařilo exportovat \n");
                     Console.WriteLine("excel nevytvoren");
                 }
-                Program.MainForm.LogBox.AppendText("\n");
+                LogBox.AppendText("\n");
                 
             }
             else
@@ -288,27 +289,27 @@ namespace ProjektSTI
             pracuji = true;
 
             Sluzba s = new Sluzba();
-            String nazev = Program.MainForm.TabulkaCommitu.SelectedRows[0].Cells[0].Value.ToString();
+            String nazev = TabulkaCommitu.SelectedRows[0].Cells[0].Value.ToString();
             String cesta = VyberMistoUlozeni(nazev);
-            String sha = Program.MainForm.TabulkaCommitu.SelectedRows[0].Cells[2].Value.ToString();
+            String sha = TabulkaCommitu.SelectedRows[0].Cells[2].Value.ToString();
             
             if (cesta != null)
             {
                 LogniCas();
-                Program.MainForm.LogBox.AppendText("Ukládám soubor...\n");
+                LogBox.AppendText("Ukládám soubor...\n");
                 var uloz = await s.StahniSouborZGituAsync(cesta, nazev, sha);
 
                 if (uloz)
                 {
-                    Program.MainForm.LogBox.AppendText("Soubor uložen do: " + cesta + "\n");
+                    LogBox.AppendText("Soubor uložen do: " + cesta + "\n");
                     Console.WriteLine("ulozeno do: " + cesta);
                 }
                 else
                 {
-                    Program.MainForm.LogBox.AppendText("Soubor se nepodařilo uložit \n");
+                    LogBox.AppendText("Soubor se nepodařilo uložit \n");
                     Console.WriteLine("neulozeno: " + cesta + " " + nazev + " " + sha);
                 }
-                Program.MainForm.LogBox.AppendText("\n");
+                LogBox.AppendText("\n");
             }
             else
             {
@@ -332,9 +333,9 @@ namespace ProjektSTI
             NastavTlacitkaAKontrolku();
         }
 
-        private static void LogniCas()
+        private void LogniCas()
         {
-            Program.MainForm.LogBox.AppendText("-------- " + DateTime.Now.ToString() + " --------" + "\n");
+            LogBox.AppendText("-------- " + DateTime.Now.ToString() + " --------" + "\n");
         }
 
         private string VyberMistoUlozeni(string nazev)
@@ -354,7 +355,7 @@ namespace ProjektSTI
             }
         }
 
-        private static bool ZkouskaInternetovehoPripojeni()
+        private bool ZkouskaInternetovehoPripojeni()
         {
             try
             {

@@ -1,6 +1,6 @@
 ﻿namespace ProjektSTI
 {
-    partial class Form2
+    partial class GrafForm
     {
         /// <summary>
         /// Required designer variable.
