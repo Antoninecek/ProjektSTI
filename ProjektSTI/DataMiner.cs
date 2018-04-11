@@ -685,12 +685,14 @@ namespace ProjektSTI
             List<Zaznam> zaznamy = dm.VratCommity();
             List<Zaznam> zaznamyHodina = Zaznam.SelektujCasovouPeriodu(zaznamy, cas);
             List<File> soubory = new List<File>();
+            // az se nekdo bude ptat, proc to trva tak dlouho, ukaz mu tenhle foreach
             foreach (var z in zaznamyHodina)
             {
                 var detail = dm.VratDetailCommitu(z.sha);
                 foreach (var det in detail.files)
                 {
                     det.datum_commitu = z.commit.committer.date.ToLocalTime();
+                    det.sha = z.sha;
                 }
                 soubory.AddRange(detail.files);
             }
