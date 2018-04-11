@@ -765,7 +765,7 @@ namespace ProjektSTI
                     ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Seznam Commitu");
                     //Add the headers
                     worksheet.Cells[1, 1].Value = "Nazev";
-                    worksheet.Cells[1, 2].Value = "Nazev";
+                    worksheet.Cells[1, 2].Value = "Datum";
 
                     int index = 2;
 
