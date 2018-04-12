@@ -223,6 +223,7 @@ namespace ProjektSTI
             Form2 GraphForm = new Form2(selected_file);
             GraphForm.Text = "Graf " + selected_file;
             GraphForm.Show();
+            GraphForm.chart1.Legends.Clear();
             Sluzba sluzba = new Sluzba();
             var stat = await sluzba.VratStatistikuZmenyRadkuSouboruAsync(selected_file);
             //GraphForm.chart1.Series["Počet přidaných řádků"].Points.Clear();
