@@ -225,13 +225,18 @@ namespace ProjektSTI
             GraphForm.Show();
             GraphForm.chart1.Legends.Clear();
             Sluzba sluzba = new Sluzba();
-            var stat = await sluzba.VratStatistikuZmenyRadkuSouboruAsync(selected_file);
-            //GraphForm.chart1.Series["Počet přidaných řádků"].Points.Clear();
-            stat.Reverse();
-            foreach (var commit in stat)
+            try
             {
-                GraphForm.chart1.Series["Počet přidaných řádků"].Points.AddY(commit.pridane_radky - commit.odebrane_radky);
-            };
+                var stat = await sluzba.VratStatistikuZmenyRadkuSouboruAsync(selected_file);
+                //GraphForm.chart1.Series["Počet přidaných řádků"].Points.Clear();
+                stat.Reverse();
+                foreach (var commit in stat)
+                {
+                    GraphForm.chart1.Series["Počet přidaných řádků"].Points.AddY(commit.pridane_radky - commit.odebrane_radky);
+                };
+            }
+            catch (System.NullReferenceException)
+            {};
         }
 
         private async void ExportButton_Click(object sender, EventArgs e)
