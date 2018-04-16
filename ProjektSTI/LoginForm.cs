@@ -19,35 +19,35 @@ namespace ProjektSTI
 
         private void LoginForm_Load(object sender, EventArgs e)
         {
-            this.ActiveControl = label1;
-            textBox1.GotFocus += new EventHandler(this.textBox1_GotFocus);
-            textBox1.LostFocus += new EventHandler(this.textBox1_LostFocus);
-            textBox2.GotFocus += new EventHandler(this.textBox2_GotFocus);
-            textBox2.LostFocus += new EventHandler(this.textBox2_LostFocus);
-            textBox3.GotFocus += new EventHandler(this.textBox3_GotFocus);
-            textBox3.LostFocus += new EventHandler(this.textBox3_LostFocus);
+            this.ActiveControl = tokenLabel;
+            tokenBox.GotFocus += new EventHandler(this.tokenBox_GotFocus);
+            tokenBox.LostFocus += new EventHandler(this.tokenBox_LostFocus);
+            uzivatelBox.GotFocus += new EventHandler(this.uzivatelBox_GotFocus);
+            uzivatelBox.LostFocus += new EventHandler(this.uzivatelBox_LostFocus);
+            repozitarBox.GotFocus += new EventHandler(this.repozitarBox_GotFocus);
+            repozitarBox.LostFocus += new EventHandler(this.repozitarBox_LostFocus);
         }
 
-        private void textBox1_LostFocus(object sender, EventArgs e)
+        private void tokenBox_LostFocus(object sender, EventArgs e)
         {
             TextBox tb = (TextBox)sender;
             if (tb.Text == "")
             {
-                tb.Text = "http://api.github.com";
+                tb.Text = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
                 tb.ForeColor = Color.LightGray;
             }
         }
 
-        private void textBox1_GotFocus(object sender, EventArgs e)
+        private void tokenBox_GotFocus(object sender, EventArgs e)
         {
             TextBox tb = (TextBox)sender;
-            if (tb.Text == "http://api.github.com")
+            if (tb.Text == "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
             {
                 tb.Text = "";
                 tb.ForeColor = Color.Black;
             }
         }
-        private void textBox2_LostFocus(object sender, EventArgs e)
+        private void uzivatelBox_LostFocus(object sender, EventArgs e)
         {
             TextBox tb = (TextBox)sender;
             if (tb.Text == "")
@@ -57,7 +57,7 @@ namespace ProjektSTI
             }
         }
 
-        private void textBox2_GotFocus(object sender, EventArgs e)
+        private void uzivatelBox_GotFocus(object sender, EventArgs e)
         {
             TextBox tb = (TextBox)sender;
             if (tb.Text == "Antoninecek")
@@ -66,7 +66,7 @@ namespace ProjektSTI
                 tb.ForeColor = Color.Black;
             }
         }
-        private void textBox3_LostFocus(object sender, EventArgs e)
+        private void repozitarBox_LostFocus(object sender, EventArgs e)
         {
             TextBox tb = (TextBox)sender;
             if (tb.Text == "")
@@ -76,7 +76,7 @@ namespace ProjektSTI
             }
         }
 
-        private void textBox3_GotFocus(object sender, EventArgs e)
+        private void repozitarBox_GotFocus(object sender, EventArgs e)
         {
             TextBox tb = (TextBox)sender;
             if (tb.Text == "TEST")
@@ -86,15 +86,18 @@ namespace ProjektSTI
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void LoginButton_Click(object sender, EventArgs e)
         {
-            string adresa = textBox1.Text;
-            string uzivatel = textBox2.Text;
-            string repozitar = textBox3.Text;
+            string token = tokenBox.Text;
+            string uzivatel = uzivatelBox.Text;
+            string repozitar = repozitarBox.Text;
 
             this.Hide();
-            MainForm mf = new MainForm(adresa, uzivatel, repozitar);
-            mf.Text = adresa + "/" + uzivatel + "/" + repozitar;
+            Sluzba s = new Sluzba();
+            s.NastavDataMiner(repozitar, uzivatel, token);
+            MainForm mf = new MainForm();
+            mf.Text = uzivatel + "/" + repozitar;
+            mf.StartPosition = FormStartPosition.CenterParent;
             mf.ShowDialog();
             this.Close();
         }

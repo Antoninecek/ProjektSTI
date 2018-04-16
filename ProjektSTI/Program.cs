@@ -20,6 +20,7 @@ namespace ProjektSTI
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             LoginForm = new LoginForm();
+            LoginForm.StartPosition = FormStartPosition.CenterScreen;
             Application.Run(LoginForm);
         }
     }

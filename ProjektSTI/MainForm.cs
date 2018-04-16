@@ -40,7 +40,7 @@ namespace ProjektSTI
         // počet nových commitů během jednoho cyklu hledání - pouze pro vypsání do logu
         static int pocetNovychCommitu = 0;
 
-        public MainForm(string adresa, string uzivatel, string repozitar)
+        public MainForm()
         {
             InitializeComponent();
             casovac.Tick += new EventHandler(ZpracovaniCasovace);
@@ -221,29 +221,16 @@ namespace ProjektSTI
 
         private async void GrafButton_Click(object sender, EventArgs e)
         {
-<<<<<<< HEAD:ProjektSTI/MainForm.cs
-            
+
             String selected_file = TabulkaCommitu.SelectedCells[0].Value.ToString();
-            
-            GrafForm GrafForm = new GrafForm(selected_file);
-            GrafForm.Text = "Graf " + selected_file;
-            GrafForm.Show();
-=======
 
-            String selected_file = Program.MainForm.TabulkaCommitu.SelectedCells[0].Value.ToString();
-
-            Form2 GraphForm = new Form2(selected_file);
+            GrafForm GraphForm = new GrafForm(selected_file);
             GraphForm.Text = "Graf " + selected_file;
             GraphForm.Show();
             GraphForm.chart1.Legends.Clear();
->>>>>>> master:ProjektSTI/Form1.cs
             Sluzba sluzba = new Sluzba();
             try
             {
-<<<<<<< HEAD:ProjektSTI/MainForm.cs
-                GrafForm.chart1.Series["Počet přidaných řádků"].Points.AddY(commit.pridane_radky - commit.odebrane_radky);
-            };
-=======
                 var stat = await sluzba.VratStatistikuZmenyRadkuSouboruAsync(selected_file);
                 //GraphForm.chart1.Series["Počet přidaných řádků"].Points.Clear();
                 stat.Reverse();
@@ -254,7 +241,6 @@ namespace ProjektSTI
             }
             catch (System.NullReferenceException)
             {};
->>>>>>> master:ProjektSTI/Form1.cs
         }
 
         private async void ExportButton_Click(object sender, EventArgs e)
@@ -293,13 +279,7 @@ namespace ProjektSTI
                     LogBox.AppendText("Soubor se nepodařilo exportovat \n");
                     Console.WriteLine("excel nevytvoren");
                 }
-<<<<<<< HEAD:ProjektSTI/MainForm.cs
                 LogBox.AppendText("\n");
-                
-=======
-                Program.MainForm.LogBox.AppendText("\n");
-
->>>>>>> master:ProjektSTI/Form1.cs
             }
             else
             {
@@ -319,13 +299,8 @@ namespace ProjektSTI
             Sluzba s = new Sluzba();
             String nazev = TabulkaCommitu.SelectedRows[0].Cells[0].Value.ToString();
             String cesta = VyberMistoUlozeni(nazev);
-<<<<<<< HEAD:ProjektSTI/MainForm.cs
             String sha = TabulkaCommitu.SelectedRows[0].Cells[2].Value.ToString();
-            
-=======
-            String sha = Program.MainForm.TabulkaCommitu.SelectedRows[0].Cells[2].Value.ToString();
 
->>>>>>> master:ProjektSTI/Form1.cs
             if (cesta != null)
             {
                 LogniCas();
