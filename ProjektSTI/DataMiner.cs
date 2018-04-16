@@ -16,7 +16,13 @@ namespace ProjektSTI
 
     class Sluzba : ISluzba
     {
-
+        /// <summary>
+        /// nastaveni datamineru pro repozitar, uzivatele a accesstoken
+        /// </summary>
+        /// <param name="repozitar"></param>
+        /// <param name="uzivatel"></param>
+        /// <param name="access_token"></param>
+        /// <returns>T/F - podarilo se nastavit</returns>
         public bool NastavDataMiner(string repozitar, string uzivatel, string access_token){
             Nastaveni n = new Nastaveni() { Repozitar = repozitar, Uzivatel = uzivatel, githubToken = access_token };
             var txt = JsonConvert.SerializeObject(n);
