@@ -10,12 +10,12 @@ using System.Windows.Forms;
 
 namespace ProjektSTI
 {
-    public partial class Form2 : Form
+    public partial class GrafForm : Form
     {
-        public Form2(String FileName)
+        public GrafForm(String FileName)
         {
             InitializeComponent();
-            Form2.ActiveForm.Text = "Graf: " + FileName;
+            //GrafForm.ActiveForm.Text = "Graf: " + FileName;
             label1.Text = "Změny počtu řádků souboru " + FileName;
         }
 
