@@ -16,6 +16,34 @@ namespace ProjektSTI
 
     class Sluzba : ISluzba
     {
+
+        public bool NastavDataMiner(string repozitar, string uzivatel, string access_token){
+            Nastaveni n = new Nastaveni() { Repozitar = repozitar, Uzivatel = uzivatel, githubToken = access_token };
+            var txt = JsonConvert.SerializeObject(n);
+            string cesta = Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + "\\config.json";
+            try
+            {
+                if (System.IO.File.Exists(cesta))
+                {
+                    System.IO.File.WriteAllText(cesta, txt);
+                }
+                else
+                {
+                    System.IO.File.WriteAllText(cesta, txt);
+                    //using (FileStream fs = System.IO.File.Create(path))
+                    //{
+                    //    Byte[] info = new UTF8Encoding(true).GetBytes("This is some text in the file.");
+                    //    // Add some information to the file.
+                    //    fs.Write(info, 0, info.Length);
+                    //}
+                }
+                return true;
+            } catch (Exception)
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Vraci vsechny soubory vsech commitu uskutecnenych po case.
         /// </summary>
@@ -141,8 +169,10 @@ namespace ProjektSTI
         public DataMiner()
         {
             AdresaServer = "http://api.github.com";
-            Repozitar = "TEST";
-            Uzivatel = "Antoninecek";
+            var txt = System.IO.File.ReadAllText(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + "\\config.json");
+            Nastaveni n = JsonConvert.DeserializeObject<Nastaveni>(txt);
+            Repozitar = n.Repozitar;
+            Uzivatel = n.Uzivatel;
         }
         public string AdresaServer { get; set; }
         public string Repozitar { get; set; }

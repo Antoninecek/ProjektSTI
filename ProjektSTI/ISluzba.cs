@@ -14,5 +14,6 @@ namespace ProjektSTI
         Task<Decimal> SpocitejPocetRadkuVSouborechUrcitehoTypuAsync(string typ);
         Task<bool> StahniSouborZGituAsync(string lokalniCesta, string nazevSouboruGit, string shaCommitu);
         Task<bool> VytvorExcelSeznamCommituAsync(List<Tuple<string, DateTime>> soubory, string cesta);
+        bool NastavDataMiner(string repozitar, string uzivatel, string access_token);
     }
 }
