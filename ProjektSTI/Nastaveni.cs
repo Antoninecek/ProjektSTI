@@ -9,5 +9,7 @@ namespace ProjektSTI
     public class Nastaveni
     {
         public string githubToken { get; set; }
+        public string Uzivatel { get; set; }
+        public string Repozitar { get; set; }
     }
 }

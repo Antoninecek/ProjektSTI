@@ -29,7 +29,7 @@ namespace ProjektSTI
         static Boolean noveSpusteni = true;
 
         // počet všech commitů
- //       static int pocetVsechCommitu = 0;
+        //       static int pocetVsechCommitu = 0;
 
         // hodnota, která oznamuje, zda je v průběhu nějaká činnost aplikace - pro správné nastavení tlačítek a zobrazení GUI
         static Boolean pracuji = false;
@@ -49,6 +49,7 @@ namespace ProjektSTI
 
             LogBox.SelectAll();
             LogBox.SelectionAlignment = HorizontalAlignment.Center;
+
 
             sw.Restart();
         }
@@ -87,7 +88,7 @@ namespace ProjektSTI
                         UkazatelCasu.Text = "Další kontrola po dokončení probíhající práce";
                     }
                 }
-                
+
             }
             else
             {
@@ -115,6 +116,8 @@ namespace ProjektSTI
             posledniKontrola = DateTime.Now;
             NastavTlacitkaAKontrolku();
             Sluzba s = new Sluzba();
+
+            
 
             LogniCas();
             LogBox.AppendText("Zpracovávám commity..." + "\n");
@@ -167,7 +170,7 @@ namespace ProjektSTI
                     UlozitButton.Enabled = false;
                     ExportButton.Enabled = false;
                 }
-                
+
             }
             else if (pracuji && ZkouskaInternetovehoPripojeni())
             {
@@ -194,13 +197,13 @@ namespace ProjektSTI
         private void VypisCommityDoTabulky(List<File> soubory)
         {
             soubory.Reverse();
-            
+
             foreach (File soubor in soubory)
             {
                 pocetNovychCommitu++;
                 TabulkaCommitu.Rows.Insert(0, soubor.filename, soubor.datum_commitu.ToString(), soubor.sha.ToString());
             }
-            
+
         }
 
         private void RefreshButton_Click(object sender, EventArgs e)
@@ -218,20 +221,40 @@ namespace ProjektSTI
 
         private async void GrafButton_Click(object sender, EventArgs e)
         {
+<<<<<<< HEAD:ProjektSTI/MainForm.cs
             
             String selected_file = TabulkaCommitu.SelectedCells[0].Value.ToString();
             
             GrafForm GrafForm = new GrafForm(selected_file);
             GrafForm.Text = "Graf " + selected_file;
             GrafForm.Show();
+=======
+
+            String selected_file = Program.MainForm.TabulkaCommitu.SelectedCells[0].Value.ToString();
+
+            Form2 GraphForm = new Form2(selected_file);
+            GraphForm.Text = "Graf " + selected_file;
+            GraphForm.Show();
+            GraphForm.chart1.Legends.Clear();
+>>>>>>> master:ProjektSTI/Form1.cs
             Sluzba sluzba = new Sluzba();
-            var stat = await sluzba.VratStatistikuZmenyRadkuSouboruAsync(selected_file);
-            //GraphForm.chart1.Series["Počet přidaných řádků"].Points.Clear();
-            stat.Reverse();
-            foreach (var commit in stat)
+            try
             {
+<<<<<<< HEAD:ProjektSTI/MainForm.cs
                 GrafForm.chart1.Series["Počet přidaných řádků"].Points.AddY(commit.pridane_radky - commit.odebrane_radky);
             };
+=======
+                var stat = await sluzba.VratStatistikuZmenyRadkuSouboruAsync(selected_file);
+                //GraphForm.chart1.Series["Počet přidaných řádků"].Points.Clear();
+                stat.Reverse();
+                foreach (var commit in stat)
+                {
+                    GraphForm.chart1.Series["Počet přidaných řádků"].Points.AddY(commit.pridane_radky - commit.odebrane_radky);
+                };
+            }
+            catch (System.NullReferenceException)
+            {};
+>>>>>>> master:ProjektSTI/Form1.cs
         }
 
         private async void ExportButton_Click(object sender, EventArgs e)
@@ -244,10 +267,10 @@ namespace ProjektSTI
 
             Sluzba s = new Sluzba();
             List<Tuple<string, DateTime>> list = new List<Tuple<string, DateTime>>();
-            
+
             string cesta = VyberMistoUlozeni("export.xlsx");
 
-             if (cesta != null)
+            if (cesta != null)
             {
                 foreach (DataGridViewRow row in TabulkaCommitu.Rows)
                 {
@@ -270,8 +293,13 @@ namespace ProjektSTI
                     LogBox.AppendText("Soubor se nepodařilo exportovat \n");
                     Console.WriteLine("excel nevytvoren");
                 }
+<<<<<<< HEAD:ProjektSTI/MainForm.cs
                 LogBox.AppendText("\n");
                 
+=======
+                Program.MainForm.LogBox.AppendText("\n");
+
+>>>>>>> master:ProjektSTI/Form1.cs
             }
             else
             {
@@ -291,8 +319,13 @@ namespace ProjektSTI
             Sluzba s = new Sluzba();
             String nazev = TabulkaCommitu.SelectedRows[0].Cells[0].Value.ToString();
             String cesta = VyberMistoUlozeni(nazev);
+<<<<<<< HEAD:ProjektSTI/MainForm.cs
             String sha = TabulkaCommitu.SelectedRows[0].Cells[2].Value.ToString();
             
+=======
+            String sha = Program.MainForm.TabulkaCommitu.SelectedRows[0].Cells[2].Value.ToString();
+
+>>>>>>> master:ProjektSTI/Form1.cs
             if (cesta != null)
             {
                 LogniCas();
@@ -343,7 +376,7 @@ namespace ProjektSTI
             SaveFileDialog savefile = new SaveFileDialog();
             string format = Path.GetExtension(nazev);
             savefile.FileName = nazev;
-            savefile.Filter = format.Substring(1,format.Length-1).ToUpper() + " soubory (*"+ format + ")|*" + format + "|Všechny soubory (*.*)|*.*";
+            savefile.Filter = format.Substring(1, format.Length - 1).ToUpper() + " soubory (*" + format + ")|*" + format + "|Všechny soubory (*.*)|*.*";
 
             if (savefile.ShowDialog() == DialogResult.OK)
             {

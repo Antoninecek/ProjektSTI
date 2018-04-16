@@ -17,6 +17,40 @@ namespace ProjektSTI
     class Sluzba : ISluzba
     {
         /// <summary>
+        /// nastaveni datamineru pro repozitar, uzivatele a accesstoken
+        /// </summary>
+        /// <param name="repozitar"></param>
+        /// <param name="uzivatel"></param>
+        /// <param name="access_token"></param>
+        /// <returns>T/F - podarilo se nastavit</returns>
+        public bool NastavDataMiner(string repozitar, string uzivatel, string access_token){
+            Nastaveni n = new Nastaveni() { Repozitar = repozitar, Uzivatel = uzivatel, githubToken = access_token };
+            var txt = JsonConvert.SerializeObject(n);
+            string cesta = Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + "\\config.json";
+            try
+            {
+                if (System.IO.File.Exists(cesta))
+                {
+                    System.IO.File.WriteAllText(cesta, txt);
+                }
+                else
+                {
+                    System.IO.File.WriteAllText(cesta, txt);
+                    //using (FileStream fs = System.IO.File.Create(path))
+                    //{
+                    //    Byte[] info = new UTF8Encoding(true).GetBytes("This is some text in the file.");
+                    //    // Add some information to the file.
+                    //    fs.Write(info, 0, info.Length);
+                    //}
+                }
+                return true;
+            } catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Vraci vsechny soubory vsech commitu uskutecnenych po case.
         /// </summary>
         /// <param name="cas">doba, od ktere se zacnou vyhledavat commity</param>
@@ -141,8 +175,10 @@ namespace ProjektSTI
         public DataMiner()
         {
             AdresaServer = "http://api.github.com";
-            Repozitar = "TEST";
-            Uzivatel = "Antoninecek";
+            var txt = System.IO.File.ReadAllText(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + "\\config.json");
+            Nastaveni n = JsonConvert.DeserializeObject<Nastaveni>(txt);
+            Repozitar = n.Repozitar;
+            Uzivatel = n.Uzivatel;
         }
         public string AdresaServer { get; set; }
         public string Repozitar { get; set; }
@@ -685,12 +721,14 @@ namespace ProjektSTI
             List<Zaznam> zaznamy = dm.VratCommity();
             List<Zaznam> zaznamyHodina = Zaznam.SelektujCasovouPeriodu(zaznamy, cas);
             List<File> soubory = new List<File>();
+            // az se nekdo bude ptat, proc to trva tak dlouho, ukaz mu tenhle foreach
             foreach (var z in zaznamyHodina)
             {
                 var detail = dm.VratDetailCommitu(z.sha);
                 foreach (var det in detail.files)
                 {
                     det.datum_commitu = z.commit.committer.date.ToLocalTime();
+                    det.sha = z.sha;
                 }
                 soubory.AddRange(detail.files);
             }
@@ -763,7 +801,7 @@ namespace ProjektSTI
                     ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Seznam Commitu");
                     //Add the headers
                     worksheet.Cells[1, 1].Value = "Nazev";
-                    worksheet.Cells[1, 2].Value = "Nazev";
+                    worksheet.Cells[1, 2].Value = "Datum";
 
                     int index = 2;
 
