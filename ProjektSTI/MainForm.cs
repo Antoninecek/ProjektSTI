@@ -38,7 +38,7 @@ namespace ProjektSTI
         static DateTime posledniKontrola = new DateTime(2007, 10, 1, 0, 0, 0); // 01.10.2007 00:00:00 - První commit na GitHubu
 
         // počet nových commitů během jednoho cyklu hledání - pouze pro vypsání do logu
-        static int pocetNovychCommitu = 0;
+        static int pocetNovychSouboru = 0;
 
         public MainForm()
         {
@@ -127,11 +127,11 @@ namespace ProjektSTI
             {
                 VypisCommityDoTabulky(commity);
             }
-            LogBox.AppendText("Počet nových commitů: " + pocetNovychCommitu + "\n");
+            LogBox.AppendText("Počet nových souborů: " + pocetNovychSouboru + "\n");
 
             var jazyky = await s.SpocitejPocetRadkuVSouborechUrcitehoTypuAsync("java");
             LogBox.AppendText("Počet řádků jazyku Java: " + jazyky.ToString() + "\n\n");
-            pocetNovychCommitu = 0;
+            pocetNovychSouboru = 0;
 
             pracuji = false;
         }
@@ -200,7 +200,7 @@ namespace ProjektSTI
 
             foreach (File soubor in soubory)
             {
-                pocetNovychCommitu++;
+                pocetNovychSouboru++;
                 TabulkaCommitu.Rows.Insert(0, soubor.filename, soubor.datum_commitu.ToString(), soubor.sha.ToString());
             }
 
@@ -379,6 +379,11 @@ namespace ProjektSTI
             {
                 return false;
             }
+        }
+
+        private void LogBox_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
