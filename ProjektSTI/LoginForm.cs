@@ -92,14 +92,27 @@ namespace ProjektSTI
             string uzivatel = uzivatelBox.Text;
             string repozitar = repozitarBox.Text;
 
-            this.Hide();
-            Sluzba s = new Sluzba();
-            s.NastavDataMiner(repozitar, uzivatel, token);
-            MainForm mf = new MainForm();
-            mf.Text = uzivatel + "/" + repozitar;
-            mf.StartPosition = FormStartPosition.CenterParent;
-            mf.ShowDialog();
-            this.Close();
+            if (token == "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+            {
+                MessageBox.Show("Vyplňte GH token");
+
+            }
+            else
+            {
+                this.Hide();
+                Sluzba s = new Sluzba();
+                s.NastavDataMiner(repozitar, uzivatel, token);
+                MainForm mf = new MainForm();
+                mf.Text = uzivatel + "/" + repozitar;
+                mf.StartPosition = FormStartPosition.CenterParent;
+                mf.ShowDialog();
+                this.Close();
+            }
+        }
+
+        private void uzivatelBox_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
