@@ -40,6 +40,7 @@ namespace ProjektSTI
                 MailMessage mail = new MailMessage();
                 SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
 
+<<<<<<< HEAD
                 mail.From = new MailAddress("mail_from");
                 mail.To.Add("mail_to");
                 mail.Subject = "BUG/CHYBA/FAIL";
@@ -59,12 +60,22 @@ namespace ProjektSTI
                     lg.ZapisLog(lg.VytvorZaznam());
                 }
                 SmtpServer.Credentials = new System.Net.NetworkCredential(n.Email_Jmeno, n.Email_Heslo);
+=======
+                mail.From = new MailAddress("juklkokr@gmail.com");
+                mail.To.Add("juklkokr@gmail.com");
+                mail.Subject = "Error";
+                mail.Body = "Error";
+
+                SmtpServer.Port = 587;
+                SmtpServer.Credentials = new System.Net.NetworkCredential("juklkokr", "juklkokr123");
+>>>>>>> 116a916500dbf2ff400bf43d34379a25a6ca0e42
                 SmtpServer.EnableSsl = true;
 
                 SmtpServer.Send(mail);
             }
             catch (Exception)
             {
+                
                 //throw;
             }
         }
