@@ -121,12 +121,21 @@ namespace ProjektSTI
 
             LogniCas();
             LogBox.AppendText("Zpracovávám commity..." + "\n");
-            var commity = await s.VratSouboryCommituPoCaseAsync(datum);
-            Console.WriteLine("Vrat commity od: " + datum.ToString());
-            if (commity.Count > 0)
+            try
             {
-                VypisCommityDoTabulky(commity);
+                var commity = await s.VratSouboryCommituPoCaseAsync(datum);
+                if (commity.Count > 0)
+                {
+                    VypisCommityDoTabulky(commity);
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                Application.Exit();
+            }
+            Console.WriteLine("Vrat commity od: " + datum.ToString());
+            
             LogBox.AppendText("Počet nových commitů: " + pocetNovychCommitu + "\n");
 
             var jazyky = await s.SpocitejPocetRadkuVSouborechUrcitehoTypuAsync("java");
@@ -256,36 +265,43 @@ namespace ProjektSTI
 
             string cesta = VyberMistoUlozeni("export.xlsx");
 
-            if (cesta != null)
+            try
             {
-                foreach (DataGridViewRow row in TabulkaCommitu.Rows)
+                if (cesta != null)
                 {
-                    list.Add(new Tuple<string, DateTime>(row.Cells[0].Value.ToString(), DateTime.Parse(row.Cells[1].Value.ToString())));
-                }
-                LogniCas();
-                LogBox.AppendText("Exportuji... \n");
-                var excel = await s.VytvorExcelSeznamCommituAsync(list, cesta);
+                    foreach (DataGridViewRow row in TabulkaCommitu.Rows)
+                    {
+                        list.Add(new Tuple<string, DateTime>(row.Cells[0].Value.ToString(), DateTime.Parse(row.Cells[1].Value.ToString())));
+                    }
+                    LogniCas();
+                    LogBox.AppendText("Exportuji... \n");
+                    var excel = await s.VytvorExcelSeznamCommituAsync(list, cesta);
 
-                if (excel)
-                {
-                    LogBox.AppendText("Soubor exportován do: " + cesta + "\n");
-                    TabulkaCommitu.ClearSelection();
-                    TabulkaCommitu.Rows.Clear();
-                    TabulkaCommitu.Refresh();
-                    Console.WriteLine("excel vytvoren v: " + cesta);
+                    if (excel)
+                    {
+                        LogBox.AppendText("Soubor exportován do: " + cesta + "\n");
+                        TabulkaCommitu.ClearSelection();
+                        TabulkaCommitu.Rows.Clear();
+                        TabulkaCommitu.Refresh();
+                        Console.WriteLine("excel vytvoren v: " + cesta);
+                    }
+                    else
+                    {
+                        LogBox.AppendText("Soubor se nepodařilo exportovat \n");
+                        Console.WriteLine("excel nevytvoren");
+                    }
+                    LogBox.AppendText("\n");
                 }
                 else
                 {
-                    LogBox.AppendText("Soubor se nepodařilo exportovat \n");
-                    Console.WriteLine("excel nevytvoren");
+                    Console.WriteLine("cesta nevybrana");
                 }
-                LogBox.AppendText("\n");
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("cesta nevybrana");
+                MessageBox.Show(ex.Message);
             }
-            pracuji = false;
+                pracuji = false;
         }
 
         private async void UlozitButon_Click(object sender, EventArgs e)
@@ -300,30 +316,36 @@ namespace ProjektSTI
             String nazev = TabulkaCommitu.SelectedRows[0].Cells[0].Value.ToString();
             String cesta = VyberMistoUlozeni(nazev);
             String sha = TabulkaCommitu.SelectedRows[0].Cells[2].Value.ToString();
-
-            if (cesta != null)
+            try
             {
-                LogniCas();
-                LogBox.AppendText("Ukládám soubor...\n");
-                var uloz = await s.StahniSouborZGituAsync(cesta, nazev, sha);
-
-                if (uloz)
+                if (cesta != null)
                 {
-                    LogBox.AppendText("Soubor uložen do: " + cesta + "\n");
-                    Console.WriteLine("ulozeno do: " + cesta);
+                    LogniCas();
+                    LogBox.AppendText("Ukládám soubor...\n");
+                    var uloz = await s.StahniSouborZGituAsync(cesta, nazev, sha);
+
+                    if (uloz)
+                    {
+                        LogBox.AppendText("Soubor uložen do: " + cesta + "\n");
+                        Console.WriteLine("ulozeno do: " + cesta);
+                    }
+                    else
+                    {
+                        LogBox.AppendText("Soubor se nepodařilo uložit \n");
+                        Console.WriteLine("neulozeno: " + cesta + " " + nazev + " " + sha);
+                    }
+                    LogBox.AppendText("\n");
                 }
                 else
                 {
-                    LogBox.AppendText("Soubor se nepodařilo uložit \n");
-                    Console.WriteLine("neulozeno: " + cesta + " " + nazev + " " + sha);
+                    Console.WriteLine("cesta nevybrana");
                 }
-                LogBox.AppendText("\n");
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("cesta nevybrana");
+                MessageBox.Show(ex.Message);
             }
-            pracuji = false;
+                pracuji = false;
 
         }
         private void TabulkaCommitu_SelectionChanged(object sender, EventArgs e)

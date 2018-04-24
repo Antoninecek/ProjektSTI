@@ -185,7 +185,7 @@ namespace ProjektSTI
             {
                 new Logger(ex.Message).Loguj();
                 // RETHROW - nepodarilo se nacist nastaveni z configu - bud chybi config, nebo tam neni nastaveni
-                throw ex;
+                throw new Exception("Chyba! Nepodařilo se získat nastavení z konfiguračního souboru");
             }
         }
         public string AdresaServer { get; set; }
@@ -228,7 +228,7 @@ namespace ProjektSTI
             {
                 new Logger(ex.Message).Loguj();
                 // RETHROW - nejde udelat request
-                throw ex;
+                throw new Exception("Chyba! Nesprávný request, zkontrolujte vstupní parametry");
             }
         }
 
@@ -257,7 +257,7 @@ namespace ProjektSTI
             {
                 // RETHROW - nejde udelat request
                 new Logger(ex.Message).Loguj();
-                throw ex;
+                throw new Exception("Chyba! Nesprávný request, zkontrolujte vstupní parametry");
             }
         }
 
@@ -798,7 +798,7 @@ namespace ProjektSTI
                 // RETHROW - nelze ulozit
                 Console.WriteLine("chyba ukladani");
                 new Logger(ex.Message).Loguj();
-                throw ex;
+                throw new Exception("Došlo k chybě při ukládání souboru");
             }
             return true;
         }
@@ -866,7 +866,7 @@ namespace ProjektSTI
                 {
                     // RETHROW - nejde vytvorit excel a ulozit ho
                     new Logger(ex.Message).Loguj();
-                    throw ex;
+                    throw new Exception("Chyba! Nepodařilo se vytvořit soubor xls");
                 }
                 return true;
             }
