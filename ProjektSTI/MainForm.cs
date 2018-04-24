@@ -132,7 +132,7 @@ namespace ProjektSTI
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-                Application.Exit();
+                Application.Restart();
             }
             Console.WriteLine("Vrat commity od: " + datum.ToString());
             
