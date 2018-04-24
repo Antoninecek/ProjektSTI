@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +14,10 @@ namespace ProjektSTI
 {
     public partial class LoginForm : Form
     {
+        string Repozitar;
+        string Uzivatel;
+        string Token;
+
         public LoginForm()
         {
             InitializeComponent();
@@ -19,6 +25,12 @@ namespace ProjektSTI
 
         private void LoginForm_Load(object sender, EventArgs e)
         {
+            NactiConfig();
+
+            repozitarBox.Text = Repozitar;
+            uzivatelBox.Text = Uzivatel;
+            tokenBox.Text = Token;
+            
             this.ActiveControl = tokenLabel;
             tokenBox.GotFocus += new EventHandler(this.tokenBox_GotFocus);
             tokenBox.LostFocus += new EventHandler(this.tokenBox_LostFocus);
@@ -28,12 +40,31 @@ namespace ProjektSTI
             repozitarBox.LostFocus += new EventHandler(this.repozitarBox_LostFocus);
         }
 
+        private void NactiConfig()
+        {
+            string config_path = Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + "\\config.json";
+            if (System.IO.File.Exists(config_path))
+            {
+                var txt = System.IO.File.ReadAllText(config_path);
+                Nastaveni n = JsonConvert.DeserializeObject<Nastaveni>(txt);
+                Repozitar = n.Repozitar;
+                Uzivatel = n.Uzivatel;
+                Token = n.githubToken;
+            } else
+            {
+                Repozitar = "Název repozitáře";
+                Uzivatel = "Uživatelské jméno";
+                Token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+            }
+            
+        }
+
         private void tokenBox_LostFocus(object sender, EventArgs e)
         {
             TextBox tb = (TextBox)sender;
             if (tb.Text == "")
             {
-                tb.Text = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+                tb.Text = Token;
                 tb.ForeColor = Color.LightGray;
             }
         }
@@ -41,7 +72,7 @@ namespace ProjektSTI
         private void tokenBox_GotFocus(object sender, EventArgs e)
         {
             TextBox tb = (TextBox)sender;
-            if (tb.Text == "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+            if (tb.Text == Token)
             {
                 tb.Text = "";
                 tb.ForeColor = Color.Black;
@@ -52,7 +83,7 @@ namespace ProjektSTI
             TextBox tb = (TextBox)sender;
             if (tb.Text == "")
             {
-                tb.Text = "Antoninecek";
+                tb.Text = Uzivatel;
                 tb.ForeColor = Color.LightGray;
             }
         }
@@ -60,7 +91,7 @@ namespace ProjektSTI
         private void uzivatelBox_GotFocus(object sender, EventArgs e)
         {
             TextBox tb = (TextBox)sender;
-            if (tb.Text == "Antoninecek")
+            if (tb.Text == Uzivatel)
             {
                 tb.Text = "";
                 tb.ForeColor = Color.Black;
@@ -71,7 +102,7 @@ namespace ProjektSTI
             TextBox tb = (TextBox)sender;
             if (tb.Text == "")
             {
-                tb.Text = "TEST";
+                tb.Text = Repozitar;
                 tb.ForeColor = Color.LightGray;
             }
         }
@@ -79,7 +110,7 @@ namespace ProjektSTI
         private void repozitarBox_GotFocus(object sender, EventArgs e)
         {
             TextBox tb = (TextBox)sender;
-            if (tb.Text == "TEST")
+            if (tb.Text == Repozitar)
             {
                 tb.Text = "";
                 tb.ForeColor = Color.Black;
@@ -94,8 +125,7 @@ namespace ProjektSTI
 
             if (token == "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
             {
-                MessageBox.Show("Vyplňte GH token");
-
+                MessageBox.Show("Zadejte GH token", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
