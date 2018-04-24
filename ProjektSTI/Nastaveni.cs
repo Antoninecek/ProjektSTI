@@ -11,5 +11,7 @@ namespace ProjektSTI
         public string githubToken { get; set; }
         public string Uzivatel { get; set; }
         public string Repozitar { get; set; }
+        public string Email_Jmeno { get; set; }
+        public string Email_Heslo { get; set; }
     }
 }
