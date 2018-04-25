@@ -135,11 +135,7 @@ namespace ProjektSTI
                 Application.Restart();
             }
             LogBox.AppendText("Počet nových souborů: " + pocetNovychSouboru + "\n");
-=======
-            Console.WriteLine("Vrat commity od: " + datum.ToString());
-            
-            LogBox.AppendText("Počet nových commitů: " + pocetNovychCommitu + "\n");
->>>>>>> 261d1a41dc69c70d2de674654289db93498c47d6
+
 
             var jazyky = await s.SpocitejPocetRadkuVSouborechUrcitehoTypuAsync("java");
             LogBox.AppendText("Počet řádků jazyku Java: " + jazyky.ToString() + "\n\n");
