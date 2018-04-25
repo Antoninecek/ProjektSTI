@@ -130,6 +130,7 @@
             this.TabulkaCommitu.MultiSelect = false;
             this.TabulkaCommitu.Name = "TabulkaCommitu";
             this.TabulkaCommitu.ReadOnly = true;
+            this.TabulkaCommitu.RowHeadersVisible = false;
             this.TabulkaCommitu.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.TabulkaCommitu.Size = new System.Drawing.Size(449, 386);
             this.TabulkaCommitu.TabIndex = 13;

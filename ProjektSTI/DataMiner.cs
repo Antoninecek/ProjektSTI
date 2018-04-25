@@ -175,10 +175,18 @@ namespace ProjektSTI
         public DataMiner()
         {
             AdresaServer = "http://api.github.com";
-            var txt = System.IO.File.ReadAllText(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + "\\config.json");
-            Nastaveni n = JsonConvert.DeserializeObject<Nastaveni>(txt);
-            Repozitar = n.Repozitar;
-            Uzivatel = n.Uzivatel;
+            try
+            {
+                var txt = System.IO.File.ReadAllText(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + "\\config.json");
+                Nastaveni n = JsonConvert.DeserializeObject<Nastaveni>(txt);
+                Repozitar = n.Repozitar;
+                Uzivatel = n.Uzivatel;
+            }catch(Exception ex)
+            {
+                new Logger(ex.Message).Loguj();
+                // RETHROW - nepodarilo se nacist nastaveni z configu - bud chybi config, nebo tam neni nastaveni
+                throw new Exception("Chyba! Nepodařilo se získat nastavení z konfiguračního souboru");
+            }
         }
         public string AdresaServer { get; set; }
         public string Repozitar { get; set; }
@@ -206,13 +214,22 @@ namespace ProjektSTI
             request.KeepAlive = true;
             HttpRequestCachePolicy noCachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
             request.CachePolicy = noCachePolicy;
-            WebResponse response = request.GetResponse();
-            Stream dataStream = response.GetResponseStream();
-            StreamReader reader = new StreamReader(dataStream);
-            string responseFromServer = reader.ReadToEnd();
-            reader.Close();
-            response.Close();
-            return responseFromServer;
+            try
+            {
+                WebResponse response = request.GetResponse();
+                Stream dataStream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(dataStream);
+                string responseFromServer = reader.ReadToEnd();
+                reader.Close();
+                response.Close();
+
+                return responseFromServer;
+            }catch(Exception ex)
+            {
+                new Logger(ex.Message).Loguj();
+                // RETHROW - nejde udelat request
+                throw new Exception("Chyba! Nesprávný request, zkontrolujte vstupní parametry");
+            }
         }
 
         public string UdelejRequestGitHub(string url, Dictionary<string, string> parametry = null)
@@ -227,13 +244,21 @@ namespace ProjektSTI
             request.Method = "GET";
             request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0";
             //request.Headers["Time-Zone"] = "Europe/Prague";
-            WebResponse response = request.GetResponse();
-            Stream dataStream = response.GetResponseStream();
-            StreamReader reader = new StreamReader(dataStream);
-            string responseFromServer = reader.ReadToEnd();
-            reader.Close();
-            response.Close();
-            return responseFromServer;
+            try
+            {
+                WebResponse response = request.GetResponse();
+                Stream dataStream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(dataStream);
+                string responseFromServer = reader.ReadToEnd();
+                reader.Close();
+                response.Close();
+                return responseFromServer;
+            }catch(Exception ex)
+            {
+                // RETHROW - nejde udelat request
+                new Logger(ex.Message).Loguj();
+                throw new Exception("Chyba! Nesprávný request, zkontrolujte vstupní parametry");
+            }
         }
 
         /// <summary>
@@ -611,7 +636,15 @@ namespace ProjektSTI
         public static List<RootObject> SelektujSouboryPodleKoncovky(List<RootObject> soubory, string koncovka)
         {
             var regex = new Regex(@".*." + koncovka + "$");
-            return soubory.Where(x => regex.IsMatch(x.path.ToLower())).ToList();
+            try
+            {
+                return soubory.Where(x => regex.IsMatch(x.path.ToLower())).ToList();
+            }catch(Exception ex)
+            {
+                // nevim, jak se zachova pri 0 souboru
+                new Logger(ex.Message).Loguj();
+                return new List<RootObject>();
+            }
         }
 
         /// <summary>
@@ -749,10 +782,10 @@ namespace ProjektSTI
         /// <returns></returns>
         public static bool UlozSouborGitu(string cesta, string nazev, string sha)
         {
+            DataMiner dm = new DataMiner();
+            string obsah = dm.VratObsahSouboruGitu(nazev, sha);
             try
             {
-                DataMiner dm = new DataMiner();
-                string obsah = dm.VratObsahSouboruGitu(nazev, sha);
                 using (FileStream fs = System.IO.File.Create(cesta))
                 {
                     Byte[] info = new UTF8Encoding(true).GetBytes(obsah);
@@ -762,8 +795,10 @@ namespace ProjektSTI
             }
             catch (Exception ex)
             {
+                // RETHROW - nelze ulozit
                 Console.WriteLine("chyba ukladani");
-                return false;
+                new Logger(ex.Message).Loguj();
+                throw new Exception("Došlo k chybě při ukládání souboru");
             }
             return true;
         }
@@ -829,8 +864,9 @@ namespace ProjektSTI
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
-                    return false;
+                    // RETHROW - nejde vytvorit excel a ulozit ho
+                    new Logger(ex.Message).Loguj();
+                    throw new Exception("Chyba! Nepodařilo se vytvořit soubor xls");
                 }
                 return true;
             }
