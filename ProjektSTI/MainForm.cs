@@ -159,6 +159,7 @@ namespace ProjektSTI
         {
             if (!pracuji && ZkouskaInternetovehoPripojeni())
             {
+                this.Cursor = Cursors.Default;
                 RefreshButton.Enabled = true;
                 ClearLogBoxButton.Enabled = true;
                 Kontrolka.BackColor = Color.Green;
@@ -193,6 +194,7 @@ namespace ProjektSTI
             }
             else if (pracuji && ZkouskaInternetovehoPripojeni())
             {
+                this.Cursor = Cursors.WaitCursor;
                 RefreshButton.Enabled = false;
                 ClearLogBoxButton.Enabled = false;
                 Kontrolka.BackColor = Color.Green;
@@ -203,6 +205,7 @@ namespace ProjektSTI
             }
             else
             {
+                this.Cursor = Cursors.Default;
                 RefreshButton.Enabled = false;
                 ClearLogBoxButton.Enabled = false;
                 Kontrolka.BackColor = Color.Red;
@@ -256,7 +259,8 @@ namespace ProjektSTI
                 foreach (var commit in stat)
                 {
                     GraphForm.chart1.Series["Počet přidaných řádků"].Points.AddY(commit.pridane_radky - commit.odebrane_radky);
-                };
+                }
+                GraphForm.chart1.Cursor = Cursors.Default;
             }
             catch (System.NullReferenceException)
             {};

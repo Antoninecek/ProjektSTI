@@ -49,12 +49,12 @@
             // 
             chartArea1.Name = "ChartArea1";
             this.chart1.ChartAreas.Add(chartArea1);
+            this.chart1.Cursor = System.Windows.Forms.Cursors.WaitCursor;
             legend1.Name = "Legend1";
             this.chart1.Legends.Add(legend1);
             this.chart1.Location = new System.Drawing.Point(12, 25);
             this.chart1.MaximumSize = new System.Drawing.Size(1920, 1080);
             this.chart1.MinimumSize = new System.Drawing.Size(450, 450);
-
             this.chart1.Name = "chart1";
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
@@ -64,14 +64,14 @@
             this.chart1.TabIndex = 1;
             this.chart1.Text = "chart1";
             // 
-            // Form2
+            // GrafForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(474, 486);
             this.Controls.Add(this.chart1);
             this.Controls.Add(this.label1);
-            this.Name = "Form2";
+            this.Name = "GrafForm";
             this.Text = "Graf";
             this.Load += new System.EventHandler(this.Form2_Load);
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
