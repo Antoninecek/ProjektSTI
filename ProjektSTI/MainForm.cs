@@ -117,16 +117,24 @@ namespace ProjektSTI
             NastavTlacitkaAKontrolku();
             Sluzba s = new Sluzba();
 
-            
+            DateTime start;
 
             LogniCas();
             LogBox.AppendText("Zpracovávám commity..." + "\n");
             try
             {
+                start = DateTime.Now;
+                System.Diagnostics.Debug.WriteLine("start: " + DateTime.Now);
                 var commity = await s.VratSouboryCommituPoCaseAsync(datum);
+                System.Diagnostics.Debug.WriteLine("konec: " + DateTime.Now);
+                System.Diagnostics.Debug.WriteLine("doba vraceni souboru commitu: " + (start - DateTime.Now));
                 if (commity.Count > 0)
                 {
+                    start = DateTime.Now;
+                    System.Diagnostics.Debug.WriteLine("start: " + DateTime.Now);
                     VypisCommityDoTabulky(commity);
+                    System.Diagnostics.Debug.WriteLine("konec: " + DateTime.Now);
+                    System.Diagnostics.Debug.WriteLine("doba vypsani souboru do tabulky: " + (start - DateTime.Now));
                 }
             }
             catch (Exception ex)
@@ -136,8 +144,11 @@ namespace ProjektSTI
             }
             LogBox.AppendText("Počet nových souborů: " + pocetNovychSouboru + "\n");
 
-
+            start = DateTime.Now;
+            System.Diagnostics.Debug.WriteLine("start: " + DateTime.Now);
             var jazyky = await s.SpocitejPocetRadkuVSouborechUrcitehoTypuAsync("java");
+            System.Diagnostics.Debug.WriteLine("konec: " + DateTime.Now);
+            System.Diagnostics.Debug.WriteLine("doba pocitani radku: " + (start - DateTime.Now));
             LogBox.AppendText("Počet řádků jazyku Java: " + jazyky.ToString() + "\n\n");
             pocetNovychSouboru = 0;
 
