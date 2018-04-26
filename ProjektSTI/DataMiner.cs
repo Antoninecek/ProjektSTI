@@ -228,7 +228,7 @@ namespace ProjektSTI
             {
                 new Logger(ex.Message).Loguj();
                 // RETHROW - nejde udelat request
-                throw new Exception("Chyba! Nesprávný request, zkontrolujte vstupní parametry");
+                throw new Exception("Chyba! Nesprávný request");
             }
         }
 
