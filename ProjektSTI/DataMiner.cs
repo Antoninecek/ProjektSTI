@@ -388,12 +388,6 @@ namespace ProjektSTI
         {
             string odpoved = UdelejRequestGitHub(AdresaServer + "/repos/" + Uzivatel + "/" + Repozitar + "/contents");
             var ret = JsonConvert.DeserializeObject<RootObject[]>(odpoved).ToList();
-            var commity = UdelejRequestGitHub(AdresaServer + "/repos/" + Uzivatel + "/" + Repozitar + "/commits");
-            var comm = JsonConvert.DeserializeObject<Commit[]>(commity).ToList();
-            foreach (var r in ret)
-            {
-                r.commit = comm[0];
-            }
             return ret;
         }
 
@@ -617,10 +611,12 @@ namespace ProjektSTI
         public static Decimal SpocitejPocetZnakuSadySouboru(List<RootObject> soubory, string znak)
         {
             DataMiner dm = new DataMiner();
+            var commity = dm.UdelejRequestGitHub(dm.AdresaServer + "/repos/" + dm.Uzivatel + "/" + dm.Repozitar + "/commits");
+            var comm = JsonConvert.DeserializeObject<Commit[]>(commity).ToList();
             Decimal pocet = 0;
             foreach (var js in soubory)
             {
-                var url = "https://cdn.rawgit.com/" + dm.Uzivatel + "/" + dm.Repozitar + "/" + js.commit.sha + "/" + js.path;
+                var url = "https://cdn.rawgit.com/" + dm.Uzivatel + "/" + dm.Repozitar + "/" + comm[0].sha + "/" + js.path;
                 //var url = "https://rawgit.com/" + dm.Uzivatel + "/" + dm.Repozitar + "/master/" + js.path;
                 pocet += dm.SpocitejVyskytRetezceSouboruUrl(url, znak);
             }
