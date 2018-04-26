@@ -28,72 +28,52 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.urlLabel = new System.Windows.Forms.Label();
             this.tokenLabel = new System.Windows.Forms.Label();
-            this.uzivatelLabel = new System.Windows.Forms.Label();
-            this.repozitarLabel = new System.Windows.Forms.Label();
+            this.urlBox = new System.Windows.Forms.TextBox();
             this.tokenBox = new System.Windows.Forms.TextBox();
-            this.uzivatelBox = new System.Windows.Forms.TextBox();
-            this.repozitarBox = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
+            // 
+            // urlLabel
+            // 
+            this.urlLabel.AutoSize = true;
+            this.urlLabel.Location = new System.Drawing.Point(51, 35);
+            this.urlLabel.Name = "urlLabel";
+            this.urlLabel.Size = new System.Drawing.Size(29, 13);
+            this.urlLabel.TabIndex = 0;
+            this.urlLabel.Text = "URL";
             // 
             // tokenLabel
             // 
             this.tokenLabel.AutoSize = true;
-            this.tokenLabel.Location = new System.Drawing.Point(22, 80);
+            this.tokenLabel.Location = new System.Drawing.Point(23, 60);
             this.tokenLabel.Name = "tokenLabel";
             this.tokenLabel.Size = new System.Drawing.Size(57, 13);
-            this.tokenLabel.TabIndex = 0;
+            this.tokenLabel.TabIndex = 1;
             this.tokenLabel.Text = "GH Token";
             // 
-            // uzivatelLabel
+            // urlBox
             // 
-            this.uzivatelLabel.AutoSize = true;
-            this.uzivatelLabel.Location = new System.Drawing.Point(34, 34);
-            this.uzivatelLabel.Name = "uzivatelLabel";
-            this.uzivatelLabel.Size = new System.Drawing.Size(45, 13);
-            this.uzivatelLabel.TabIndex = 1;
-            this.uzivatelLabel.Text = "Uživatel";
-            // 
-            // repozitarLabel
-            // 
-            this.repozitarLabel.AutoSize = true;
-            this.repozitarLabel.Location = new System.Drawing.Point(26, 57);
-            this.repozitarLabel.Name = "repozitarLabel";
-            this.repozitarLabel.Size = new System.Drawing.Size(53, 13);
-            this.repozitarLabel.TabIndex = 2;
-            this.repozitarLabel.Text = "Repozitář";
+            this.urlBox.ForeColor = System.Drawing.Color.LightGray;
+            this.urlBox.Location = new System.Drawing.Point(86, 32);
+            this.urlBox.Name = "urlBox";
+            this.urlBox.Size = new System.Drawing.Size(285, 20);
+            this.urlBox.TabIndex = 4;
+            this.urlBox.Text = "https://github.com/Uzivatel/Repozitar";
             // 
             // tokenBox
             // 
             this.tokenBox.ForeColor = System.Drawing.Color.LightGray;
-            this.tokenBox.Location = new System.Drawing.Point(85, 77);
+            this.tokenBox.Location = new System.Drawing.Point(86, 57);
             this.tokenBox.Name = "tokenBox";
             this.tokenBox.Size = new System.Drawing.Size(285, 20);
-            this.tokenBox.TabIndex = 4;
+            this.tokenBox.TabIndex = 5;
             this.tokenBox.Text = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-            // 
-            // uzivatelBox
-            // 
-            this.uzivatelBox.ForeColor = System.Drawing.Color.LightGray;
-            this.uzivatelBox.Location = new System.Drawing.Point(85, 31);
-            this.uzivatelBox.Name = "uzivatelBox";
-            this.uzivatelBox.Size = new System.Drawing.Size(285, 20);
-            this.uzivatelBox.TabIndex = 5;
-            this.uzivatelBox.Text = "Antoninecek";
-            // 
-            // repozitarBox
-            // 
-            this.repozitarBox.ForeColor = System.Drawing.Color.LightGray;
-            this.repozitarBox.Location = new System.Drawing.Point(85, 54);
-            this.repozitarBox.Name = "repozitarBox";
-            this.repozitarBox.Size = new System.Drawing.Size(285, 20);
-            this.repozitarBox.TabIndex = 6;
-            this.repozitarBox.Text = "TEST";
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(188, 103);
+            this.button1.Location = new System.Drawing.Point(180, 83);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 7;
@@ -105,14 +85,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(418, 146);
+            this.ClientSize = new System.Drawing.Size(418, 123);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.repozitarBox);
-            this.Controls.Add(this.uzivatelBox);
             this.Controls.Add(this.tokenBox);
-            this.Controls.Add(this.repozitarLabel);
-            this.Controls.Add(this.uzivatelLabel);
+            this.Controls.Add(this.urlBox);
             this.Controls.Add(this.tokenLabel);
+            this.Controls.Add(this.urlLabel);
             this.Name = "LoginForm";
             this.Text = "Login";
             this.Load += new System.EventHandler(this.LoginForm_Load);
@@ -123,12 +101,10 @@
 
         #endregion
 
+        private System.Windows.Forms.Label urlLabel;
         private System.Windows.Forms.Label tokenLabel;
-        private System.Windows.Forms.Label uzivatelLabel;
-        private System.Windows.Forms.Label repozitarLabel;
+        private System.Windows.Forms.TextBox urlBox;
         private System.Windows.Forms.TextBox tokenBox;
-        private System.Windows.Forms.TextBox uzivatelBox;
-        private System.Windows.Forms.TextBox repozitarBox;
         private System.Windows.Forms.Button button1;
     }
 }

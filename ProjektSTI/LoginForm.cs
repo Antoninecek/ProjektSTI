@@ -14,8 +14,7 @@ namespace ProjektSTI
 {
     public partial class LoginForm : Form
     {
-        string Repozitar;
-        string Uzivatel;
+        string Url;
         string Token;
 
         public LoginForm()
@@ -27,17 +26,14 @@ namespace ProjektSTI
         {
             NactiConfig();
 
-            repozitarBox.Text = Repozitar;
-            uzivatelBox.Text = Uzivatel;
+            urlBox.Text = Url;
             tokenBox.Text = Token;
             
-            this.ActiveControl = tokenLabel;
+            this.ActiveControl = urlLabel;
+            urlBox.GotFocus += new EventHandler(this.urlBox_GotFocus);
+            urlBox.LostFocus += new EventHandler(this.urlBox_LostFocus);
             tokenBox.GotFocus += new EventHandler(this.tokenBox_GotFocus);
             tokenBox.LostFocus += new EventHandler(this.tokenBox_LostFocus);
-            uzivatelBox.GotFocus += new EventHandler(this.uzivatelBox_GotFocus);
-            uzivatelBox.LostFocus += new EventHandler(this.uzivatelBox_LostFocus);
-            repozitarBox.GotFocus += new EventHandler(this.repozitarBox_GotFocus);
-            repozitarBox.LostFocus += new EventHandler(this.repozitarBox_LostFocus);
         }
 
         private void NactiConfig()
@@ -47,13 +43,11 @@ namespace ProjektSTI
             {
                 var txt = System.IO.File.ReadAllText(config_path);
                 Nastaveni n = JsonConvert.DeserializeObject<Nastaveni>(txt);
-                Repozitar = n.Repozitar;
-                Uzivatel = n.Uzivatel;
+                Url = "https://github.com/" + n.Uzivatel + "/" + n.Repozitar;
                 Token = n.githubToken;
             } else
             {
-                Repozitar = "Název repozitáře";
-                Uzivatel = "Uživatelské jméno";
+                Url = "https://github.com/Uzivatel/Repozitar";
                 Token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
             }
             
@@ -78,39 +72,21 @@ namespace ProjektSTI
                 tb.ForeColor = Color.Black;
             }
         }
-        private void uzivatelBox_LostFocus(object sender, EventArgs e)
+        
+        private void urlBox_LostFocus(object sender, EventArgs e)
         {
             TextBox tb = (TextBox)sender;
             if (tb.Text == "")
             {
-                tb.Text = Uzivatel;
+                tb.Text = Url;
                 tb.ForeColor = Color.LightGray;
             }
         }
 
-        private void uzivatelBox_GotFocus(object sender, EventArgs e)
+        private void urlBox_GotFocus(object sender, EventArgs e)
         {
             TextBox tb = (TextBox)sender;
-            if (tb.Text == Uzivatel)
-            {
-                tb.Text = "";
-                tb.ForeColor = Color.Black;
-            }
-        }
-        private void repozitarBox_LostFocus(object sender, EventArgs e)
-        {
-            TextBox tb = (TextBox)sender;
-            if (tb.Text == "")
-            {
-                tb.Text = Repozitar;
-                tb.ForeColor = Color.LightGray;
-            }
-        }
-
-        private void repozitarBox_GotFocus(object sender, EventArgs e)
-        {
-            TextBox tb = (TextBox)sender;
-            if (tb.Text == Repozitar)
+            if (tb.Text == Url)
             {
                 tb.Text = "";
                 tb.ForeColor = Color.Black;
@@ -120,16 +96,23 @@ namespace ProjektSTI
         private void LoginButton_Click(object sender, EventArgs e)
         {
             string token = tokenBox.Text;
-            string uzivatel = uzivatelBox.Text;
-            string repozitar = repozitarBox.Text;
+            Uri url;
+            bool validUrl = Uri.TryCreate(urlBox.Text, UriKind.Absolute, out url) && (url.Scheme == Uri.UriSchemeHttp || url.Scheme == Uri.UriSchemeHttps) && (url.PathAndQuery.Split('/').Length > 2);
 
             if (token == "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
             {
                 MessageBox.Show("Zadejte GH token", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            } else if (!validUrl)
+            {
+                MessageBox.Show("Zadejte URL ve správném tvaru", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
                 this.Hide();
+                string[] path = url.PathAndQuery.Split('/');
+                string uzivatel = path[1];
+                string repozitar = path[2];
+
                 Sluzba s = new Sluzba();
                 s.NastavDataMiner(repozitar, uzivatel, token);
                 MainForm mf = new MainForm();
@@ -137,6 +120,7 @@ namespace ProjektSTI
                 mf.StartPosition = FormStartPosition.CenterParent;
                 mf.ShowDialog();
                 this.Close();
+                
             }
         }
 

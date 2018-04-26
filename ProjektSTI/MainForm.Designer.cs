@@ -36,10 +36,10 @@
             this.GrafButton = new System.Windows.Forms.Button();
             this.ExportButton = new System.Windows.Forms.Button();
             this.TabulkaCommitu = new System.Windows.Forms.DataGridView();
+            this.UlozitButton = new System.Windows.Forms.Button();
             this.nazev = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.datum = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.sha = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.UlozitButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.Kontrolka)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TabulkaCommitu)).BeginInit();
             this.SuspendLayout();
@@ -138,32 +138,6 @@
             this.TabulkaCommitu.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView1_RowsRemoved);
             this.TabulkaCommitu.SelectionChanged += new System.EventHandler(this.TabulkaCommitu_SelectionChanged);
             // 
-            // nazev
-            // 
-            this.nazev.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.nazev.HeaderText = "Název souboru";
-            this.nazev.Name = "nazev";
-            this.nazev.ReadOnly = true;
-            this.nazev.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.nazev.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // datum
-            // 
-            this.datum.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.datum.HeaderText = "Datum";
-            this.datum.Name = "datum";
-            this.datum.ReadOnly = true;
-            this.datum.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.datum.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // sha
-            // 
-            this.sha.HeaderText = "SHA";
-            this.sha.Name = "sha";
-            this.sha.ReadOnly = true;
-            this.sha.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.sha.Visible = false;
-            // 
             // UlozitButton
             // 
             this.UlozitButton.Enabled = false;
@@ -174,6 +148,33 @@
             this.UlozitButton.Text = "Uložit";
             this.UlozitButton.UseVisualStyleBackColor = true;
             this.UlozitButton.Click += new System.EventHandler(this.UlozitButon_Click);
+            // 
+            // nazev
+            // 
+            this.nazev.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.nazev.HeaderText = "Název souboru";
+            this.nazev.Name = "nazev";
+            this.nazev.ReadOnly = true;
+            this.nazev.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.nazev.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // datum
+            // 
+            this.datum.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.datum.HeaderText = "Datum";
+            this.datum.Name = "datum";
+            this.datum.ReadOnly = true;
+            this.datum.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.datum.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // sha
+            // 
+            this.sha.HeaderText = "SHA";
+            this.sha.Name = "sha";
+            this.sha.ReadOnly = true;
+            this.sha.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.sha.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.sha.Visible = false;
             // 
             // MainForm
             // 
@@ -209,10 +210,10 @@
         private System.Windows.Forms.Button GrafButton;
         private System.Windows.Forms.Button ExportButton;
         private System.Windows.Forms.DataGridView TabulkaCommitu;
+        private System.Windows.Forms.Button UlozitButton;
         private System.Windows.Forms.DataGridViewTextBoxColumn nazev;
         private System.Windows.Forms.DataGridViewTextBoxColumn datum;
         private System.Windows.Forms.DataGridViewTextBoxColumn sha;
-        private System.Windows.Forms.Button UlozitButton;
     }
 }
 
