@@ -371,7 +371,10 @@ namespace ProjektSTI
         {
             SaveFileDialog savefile = new SaveFileDialog();
             string format = Path.GetExtension(nazev);
-            savefile.FileName = nazev;
+            char[] splitchar = { '/' };
+            String[] split_nazev = nazev.Split(splitchar);
+            String save_nazev = split_nazev[split_nazev.Length - 1];
+            savefile.FileName = save_nazev;
             savefile.Filter = format.Substring(1, format.Length - 1).ToUpper() + " soubory (*" + format + ")|*" + format + "|Všechny soubory (*.*)|*.*";
 
             if (savefile.ShowDialog() == DialogResult.OK)
