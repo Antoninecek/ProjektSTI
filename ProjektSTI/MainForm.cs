@@ -140,18 +140,30 @@ namespace ProjektSTI
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-                Application.Restart();
+                //Application.Restart();
             }
             LogBox.AppendText("Počet nových souborů: " + pocetNovychSouboru + "\n");
 
             start = DateTime.Now;
             System.Diagnostics.Debug.WriteLine("start: " + DateTime.Now);
-            var jazyky = await s.SpocitejPocetRadkuVSouborechUrcitehoTypuAsync("java");
-            System.Diagnostics.Debug.WriteLine("konec: " + DateTime.Now);
-            System.Diagnostics.Debug.WriteLine("doba pocitani radku: " + (start - DateTime.Now));
-            LogBox.AppendText("Počet řádků jazyku Java: " + jazyky.ToString() + "\n\n");
-            pocetNovychSouboru = 0;
-
+            try
+            {
+                var jazyky = await s.SpocitejPocetRadkuVSouborechUrcitehoTypuAsync("java");
+                System.Diagnostics.Debug.WriteLine("konec: " + DateTime.Now);
+                System.Diagnostics.Debug.WriteLine("doba pocitani radku: " + (start - DateTime.Now));
+                LogBox.AppendText("Počet řádků jazyku Java: " + jazyky.ToString() + "\n\n");
+                pocetNovychSouboru = 0;
+            }
+            catch(Exception ex)
+            {
+                String chyba = "Nepodařilo se spočítat řádky java souborů. ";
+                if (!ZkouskaInternetovehoPripojeni())
+                { 
+                    chyba += ("Chyba internetového připojení.");
+                }
+                LogBox.AppendText("Počet řádků jazyku Java: " + chyba + "\n\n");
+                //MessageBox.Show(chyba);
+            }
             pracuji = false;
         }
 
