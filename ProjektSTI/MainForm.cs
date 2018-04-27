@@ -27,6 +27,7 @@ namespace ProjektSTI
 
         // vytvořeno speciálně pro nové spuštění aplikace, po prvním vrácení commitů se nastaví na false
         static Boolean noveSpusteni = true;
+        static Boolean prvniCyklus = true;
 
         // počet všech commitů
         //       static int pocetVsechCommitu = 0;
@@ -66,8 +67,8 @@ namespace ProjektSTI
 
                     if (noveSpusteni == true)
                     {
-                        noveSpusteni = false;
                         ZpracujAVypis(posledniKontrola);
+                        noveSpusteni = false;
                     }
                     if (cas.VratAktualniCasMs() == 0)
                     {
@@ -139,9 +140,13 @@ namespace ProjektSTI
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
-                //Application.Restart();
+                if (prvniCyklus == true)
+                {
+                    MessageBox.Show(ex.Message);
+                    Application.Restart();
+                }
             }
+            prvniCyklus = false;
             LogBox.AppendText("Počet nových souborů: " + pocetNovychSouboru + "\n");
 
             start = DateTime.Now;
