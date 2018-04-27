@@ -37,15 +37,7 @@ namespace ProjektSTI
 
             try
             {
-                MailMessage mail = new MailMessage();
-                SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
-
-                mail.From = new MailAddress("Programek");
-                mail.To.Add("Developeri");
-                mail.Subject = "BUG/CHYBA/FAIL";
-                mail.Body = "Moji mili developeri, to jsem ja, vas softicek a prave jsem se posral. Potrebuju prebalit. Tady je zaznam - " + zprava;
-
-                SmtpServer.Port = 587;
+                
 
                 Nastaveni n = null;
                 try
@@ -58,6 +50,16 @@ namespace ProjektSTI
                     Logger lg = new Logger(ex.Message);
                     lg.ZapisLog(lg.VytvorZaznam());
                 }
+
+                MailMessage mail = new MailMessage();
+                SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
+
+                mail.From = new MailAddress(n.Email_Jmeno);
+                mail.To.Add(n.Email_Jmeno);
+                mail.Subject = "BUG/CHYBA/FAIL";
+                mail.Body = "Moji mili developeri, to jsem ja, vas softicek a prave jsem se posral. Potrebuju prebalit. Tady je zaznam - " + zprava;
+
+                SmtpServer.Port = 587;
                 SmtpServer.Credentials = new System.Net.NetworkCredential(n.Email_Jmeno, n.Email_Heslo);
                 SmtpServer.EnableSsl = true;
 
@@ -65,7 +67,6 @@ namespace ProjektSTI
             }
             catch (Exception)
             {
-                
                 //throw;
             }
         }
