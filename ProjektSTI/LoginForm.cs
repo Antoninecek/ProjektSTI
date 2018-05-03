@@ -116,7 +116,7 @@ namespace ProjektSTI
                 Sluzba s = new Sluzba();
                 s.NastavDataMiner(repozitar, uzivatel, token);
                 MainForm mf = new MainForm();
-                mf.Text = uzivatel + "/" + repozitar;
+                mf.Text = "Jukl Klikorka Komárek Krejčí - " + uzivatel + "/" + repozitar;
                 mf.StartPosition = FormStartPosition.CenterParent;
                 mf.ShowDialog();
                 this.Close();
